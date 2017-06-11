@@ -1,0 +1,17 @@
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="@dimen/item_picker_image_min_size"
+    android:layout_height="@dimen/item_picker_image_min_size"
+    android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/item_picker_image_preview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+    <CheckBox
+        android:id="@+id/item_picker_check_box"
+        android:layout_width="40dp"
+        android:layout_height="40dp"/>
+
+</FrameLayout>

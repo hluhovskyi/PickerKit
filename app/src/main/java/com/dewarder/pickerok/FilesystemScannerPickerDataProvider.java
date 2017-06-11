@@ -1,67 +1,105 @@
 package com.dewarder.pickerok;
 
-import android.net.Uri;
+import com.annimon.stream.Stream;
+import com.annimon.stream.function.Consumer;
+import com.annimon.stream.function.Predicate;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class FilesystemScannerPickerDataProvider implements PickerDataProvider<Uri> {
+public final class FilesystemScannerPickerDataProvider implements PickerDataProvider<File> {
 
-    private static final int DEFAULT_BATCH_SIZE = 25;
+    public interface PostFilter extends Predicate<File> {
+
+    }
 
     private final ExecutorService mExecutor = Executors.newSingleThreadExecutor();
-    private int mBatchSize = DEFAULT_BATCH_SIZE;
+
+    private final File mRoot;
+    private final String[] mExtensions;
+    private final PostFilter mPostFilter;
+
+    private FilesystemScannerPickerDataProvider(File root,
+                                                String[] extensions,
+                                                PostFilter postFilter) {
+        mRoot = root;
+        mExtensions = extensions;
+        mPostFilter = postFilter;
+    }
 
     @Override
-    public void request(final Callback<Uri> callback) {
-        final int batchSize = mBatchSize;
-
-        mExecutor.submit(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    final ArrayList<File> files = new ArrayList<>();
-                    walk(new File("/sdcard"), new FileConsumer() {
-                        @Override
-                        public void consume(File file) {
-                            if (file.getName().endsWith(".mp3")) {
-                                files.add(file);
-                            }
+    public void request(final Callback<File> callback) {
+        mExecutor.submit(() -> {
+            try {
+                final ArrayList<File> files = new ArrayList<>();
+                walk(mRoot, file -> {
+                    for (String extension : mExtensions) {
+                        if (file.getName().endsWith(extension)) {
+                            files.add(file);
                         }
-                    });
-
-                    ArrayList<Uri> uris = new ArrayList<>(files.size());
-                    for (File file : files) {
-                        uris.add(Uri.fromFile(file));
                     }
-                    callback.onNext(uris);
-                    callback.onComplete();
-                } catch (Exception e) {
-                    callback.onError(e);
-                }
+                });
+
+                final List<File> data = Stream.of(files).filter(mPostFilter).toList();
+                callback.onNext(data);
+                callback.onComplete();
+            } catch (Exception e) {
+                callback.onError(e);
             }
         });
     }
 
-    private void walk(File root, FileConsumer consumer) {
+    private void walk(File root, Consumer<File> consumer) {
         File[] list = root.listFiles();
         if (list == null) {
             return;
         }
 
         for (File f : list) {
+            if (f.isHidden()) {
+                continue;
+            }
+
             if (f.isDirectory()) {
                 walk(f, consumer);
             } else {
-                consumer.consume(f.getAbsoluteFile());
+                consumer.accept(f.getAbsoluteFile());
             }
         }
     }
 
-    private interface FileConsumer {
+    public static class Builder {
 
-        void consume(File file);
+        private File mRoot;
+        private String[] mExtensions;
+        private PostFilter mPostFilter = f -> true;
+
+        public Builder setRoot(File root) {
+            mRoot = root;
+            return this;
+        }
+
+        public Builder setRoot(String root) {
+            mRoot = new File(root);
+            return this;
+        }
+
+        public Builder setExtensions(String... extensions) {
+            mExtensions = extensions;
+            return this;
+        }
+
+        public Builder setPostFilter(PostFilter filter) {
+            mPostFilter = filter;
+            return this;
+        }
+
+        public FilesystemScannerPickerDataProvider build() {
+            return new FilesystemScannerPickerDataProvider(mRoot, mExtensions, mPostFilter);
+        }
     }
+
 }
