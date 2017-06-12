@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">Pickerok</string>
+
+    <string name="label_photos">Photos</string>
+    <string name="label_videos">Videos</string>
+    <string name="label_picked">Picked</string>
+    <string name="label_cancel">Cancel</string>
+    <string name="label_submit">Submit</string>
+    <string name="label_tap_to_open">Tap to open</string>
 </resources>

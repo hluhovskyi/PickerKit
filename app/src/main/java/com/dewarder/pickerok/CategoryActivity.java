@@ -23,7 +23,7 @@ import java.util.List;
 public class CategoryActivity extends AppCompatActivity implements
         OnCategoryClickListener,
         PickerPanelView.OnSubmitClickListener,
-        PickerPanelView.OnCancelClickListener {
+        PickerPanelView.OnCancelClickListener, PickerPanelView.OnCounterClickListener {
 
     private static final String EXTRA_RESULT = "EXTRA_RESULT";
 
@@ -56,8 +56,8 @@ public class CategoryActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_category);
 
-        mCategoryItemMinSize = 360;
-        mCategoryItemSpacing = 8;
+        mCategoryItemMinSize = getResources().getDimensionPixelSize(R.dimen.item_category_min_size);
+        mCategoryItemSpacing = getResources().getDimensionPixelSize(R.dimen.spacing_default);
 
         mImageDataProvider = new FilesystemScannerPickerDataProvider.Builder()
                 .setRoot("/sdcard")
@@ -77,27 +77,12 @@ public class CategoryActivity extends AppCompatActivity implements
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         mTitle = (TextView) findViewById(R.id.title);
-        mTitle.setOnClickListener(v -> {
-            PopupMenu popupMenu = new PopupMenu(this, v);
-            popupMenu.getMenu().add(0, 0, 0, "Photos");
-            popupMenu.getMenu().add(0, 1, 0, "Videos");
-            popupMenu.setOnMenuItemClickListener(item -> {
-                if (item.getItemId() == 0) {
-                    mTitle.setText("Photos");
-                    mDataProvider = mImageDataProvider;
-                } else {
-                    mTitle.setText("Videos");
-                    mDataProvider = mVideoDataProvider;
-                }
-                requestData();
-                return true;
-            });
-            popupMenu.show();
-        });
+        mTitle.setOnClickListener(this::showCategoryPopup);
 
         mPickerPanel = (PickerPanelView) findViewById(R.id.picker_panel);
         mPickerPanel.setOnSubmitClickListener(this);
         mPickerPanel.setOnCancelClickListener(this);
+        mPickerPanel.setOnCounterClickListener(this);
         mProgress = (CircularProgressView) findViewById(R.id.progress);
         mCategoryRecycler = (RecyclerView) findViewById(R.id.category_recycler);
         mCategoryRecycler.post(() -> {
@@ -200,6 +185,24 @@ public class CategoryActivity extends AppCompatActivity implements
         }
     }
 
+    private void showCategoryPopup(View anchor) {
+        PopupMenu popupMenu = new PopupMenu(this, anchor);
+        popupMenu.getMenu().add(0, 0, 0, R.string.label_photos);
+        popupMenu.getMenu().add(0, 1, 0, R.string.label_videos);
+        popupMenu.setOnMenuItemClickListener(item -> {
+            if (item.getItemId() == 0) {
+                mTitle.setText(R.string.label_photos);
+                mDataProvider = mImageDataProvider;
+            } else {
+                mTitle.setText(R.string.label_videos);
+                mDataProvider = mVideoDataProvider;
+            }
+            requestData();
+            return true;
+        });
+        popupMenu.show();
+    }
+
     @Override
     public void onSubmitClicked() {
         submit();
@@ -208,6 +211,17 @@ public class CategoryActivity extends AppCompatActivity implements
     @Override
     public void onCancelClicked() {
         cancel();
+    }
+
+    @Override
+    public void onCounterClicked() {
+        PickerActivity.startForResult(
+                this,
+                IMAGE_PICKER_ACTIVITY_REQUEST_CODE,
+                getString(R.string.label_picked),
+                mPickedData,
+                mPickedData,
+                mPickedData.size());
     }
 
     private void submit() {

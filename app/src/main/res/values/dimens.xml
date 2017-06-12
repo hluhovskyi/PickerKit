@@ -1,6 +1,6 @@
 <resources>
 
-    <dimen name="item_category_min_size">120dp</dimen>
-
+    <dimen name="item_category_min_size">144dp</dimen>
     <dimen name="item_picker_image_min_size">96dp</dimen>
+    <dimen name="spacing_default">4dp</dimen>
 </resources>

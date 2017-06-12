@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 
 import com.annimon.stream.Stream;
 
@@ -31,7 +32,8 @@ public class PickerActivity extends AppCompatActivity implements
     private static final String EXTRA_RESULT = "EXTRA_RESULT_FILES";
 
     private int mTotalPicked;
-    private final ArrayList<PickerData> mInitialData = new ArrayList<>();
+    private final ArrayList<PickerData> mData = new ArrayList<>();
+    private final Set<PickerData> mInitialPicked = new HashSet<>();
     private final Set<PickerData> mPickedImages = new HashSet<>();
 
     private RecyclerView mPickerRecycler;
@@ -69,15 +71,16 @@ public class PickerActivity extends AppCompatActivity implements
         setContentView(R.layout.acitivty_picker);
 
         mItemMinSize = getResources().getDimensionPixelSize(R.dimen.item_picker_image_min_size);
-        mItemSpacing = 8;
+        mItemSpacing = getResources().getDimensionPixelSize(R.dimen.spacing_default);
 
         List<File> files = ActivityUtils.getSerializableArgument(this, EXTRA_DATA);
         List<File> picked = ActivityUtils.getSerializableArgument(this, EXTRA_PICKED);
         String title = getIntent().getExtras().getString(EXTRA_NAME);
         mTotalPicked = getIntent().getExtras().getInt(EXTRA_TOTAL_PICKED, 0);
 
-        mInitialData.addAll(Stream.of(files).map(PickerData::new).toList());
-        mPickedImages.addAll(Stream.of(picked).map(PickerData::new).toList());
+        mData.addAll(Stream.of(files).map(PickerData::new).toList());
+        mInitialPicked.addAll(Stream.of(picked).map(PickerData::new).toList());
+        mPickedImages.addAll(mInitialPicked);
 
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
@@ -95,7 +98,7 @@ public class PickerActivity extends AppCompatActivity implements
             mPickerRecycler.addItemDecoration(new GridSpacingItemDecoration(spanCount, mItemSpacing, true));
             mPickerAdapter = new PickerAdapter<>(this, new PickerDataPreviewFetcher(this));
             mPickerAdapter.setCategoryItemSize(itemSize);
-            mPickerAdapter.setData(mInitialData);
+            mPickerAdapter.setData(mData);
             mPickerRecycler.setAdapter(mPickerAdapter);
             mPickerRecycler.setLayoutManager(mPickerLayoutManager);
         });
@@ -121,6 +124,17 @@ public class PickerActivity extends AppCompatActivity implements
     }
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home: {
+                finishWithResult(Result.of(getChecked(), getUnchecked()));
+                break;
+            }
+        }
+        return true;
+    }
+
+    @Override
     public void onBackPressed() {
         finishWithResult(Result.of(getChecked(), getUnchecked()));
     }
@@ -137,13 +151,13 @@ public class PickerActivity extends AppCompatActivity implements
 
     private List<File> getChecked() {
         return Stream.of(mPickedImages)
-                //             .filterNot(mInitialData::contains)
+                .filterNot(mInitialPicked::contains)
                 .map(PickerData::getFile)
                 .toList();
     }
 
     private List<File> getUnchecked() {
-        return Stream.of(mInitialData)
+        return Stream.of(mData)
                 .filterNot(mPickedImages::contains)
                 .map(PickerData::getFile)
                 .toList();

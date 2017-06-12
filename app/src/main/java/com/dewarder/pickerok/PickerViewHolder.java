@@ -29,7 +29,7 @@ public class PickerViewHolder extends ItemPickerViewHolder {
 
     @Override
     @NonNull
-    public Checkable getCheckBox() {
+    public CheckBox getCheckBox() {
         return mCheckBox;
     }
 }

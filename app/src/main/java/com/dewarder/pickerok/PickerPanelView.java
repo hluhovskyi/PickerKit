@@ -20,6 +20,11 @@ public class PickerPanelView extends FrameLayout {
         void onCancelClicked();
     }
 
+    public interface OnCounterClickListener {
+
+        void onCounterClicked();
+    }
+
     public interface OnSubmitClickListener {
 
         void onSubmitClicked();
@@ -32,6 +37,7 @@ public class PickerPanelView extends FrameLayout {
 
     private OnCancelClickListener mOnCancelClickListener;
     private OnSubmitClickListener mOnSubmitClickListener;
+    private OnCounterClickListener mOnCounterClickListener;
 
     public PickerPanelView(@NonNull Context context) {
         super(context);
@@ -72,9 +78,10 @@ public class PickerPanelView extends FrameLayout {
         mCancel = (TextView) findViewById(R.id.picker_panel_cancel);
         mCancel.setOnClickListener(v -> notifyOnCancelClicked());
         mSubmitContainer = (LinearLayout) findViewById(R.id.picker_panel_submit_container);
-        mSubmitContainer.setOnClickListener(v -> notifyOnSubmitClicked());
         mCounter = (TextView) findViewById(R.id.picker_panel_counter);
+        mCounter.setOnClickListener(v -> notifyOnCounterClicked());
         mSubmitLabel = (TextView) findViewById(R.id.picker_panel_submit_label);
+        mSubmitLabel.setOnClickListener(v -> notifyOnSubmitClicked());
         setPickedCount(0);
     }
 
@@ -89,17 +96,27 @@ public class PickerPanelView extends FrameLayout {
         }
     }
 
-    public void setOnSubmitClickListener(OnSubmitClickListener onSubmitClickListener) {
-        mOnSubmitClickListener = onSubmitClickListener;
+    public void setOnSubmitClickListener(OnSubmitClickListener listener) {
+        mOnSubmitClickListener = listener;
     }
 
-    public void setOnCancelClickListener(OnCancelClickListener onCancelClickListener) {
-        mOnCancelClickListener = onCancelClickListener;
+    public void setOnCancelClickListener(OnCancelClickListener listener) {
+        mOnCancelClickListener = listener;
+    }
+
+    public void setOnCounterClickListener(OnCounterClickListener listener) {
+        mOnCounterClickListener = listener;
     }
 
     private void notifyOnCancelClicked() {
         if (mOnCancelClickListener != null) {
             mOnCancelClickListener.onCancelClicked();
+        }
+    }
+
+    private void notifyOnCounterClicked() {
+        if (mOnCounterClickListener != null) {
+            mOnCounterClickListener.onCounterClicked();
         }
     }
 

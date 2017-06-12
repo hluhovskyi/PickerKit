@@ -21,7 +21,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        startActivityForResult(new Intent(this, CategoryActivity.class), PICKER_REQUEST_CODE);
+        findViewById(R.id.started).setOnClickListener(v -> {
+            startActivityForResult(new Intent(this, CategoryActivity.class), PICKER_REQUEST_CODE);
+        });
     }
 
     @Override

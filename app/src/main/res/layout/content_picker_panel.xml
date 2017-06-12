@@ -6,7 +6,7 @@
         android:layout_height="match_parent"
         android:layout_gravity="start|center_vertical"
         android:gravity="center_vertical"
-        android:text="Cancel"
+        android:text="@string/label_cancel"
         android:textAllCaps="true"
         android:textColor="@android:color/white"/>
 
@@ -30,7 +30,6 @@
             android:paddingRight="6dp"
             android:paddingStart="6dp"
             android:paddingTop="2dp"
-            android:text="20"
             android:textColor="@android:color/white"
             android:textSize="12sp"/>
 
@@ -39,7 +38,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:gravity="center_vertical"
-            android:text="Submit"
+            android:text="@string/label_submit"
             android:textAllCaps="true"/>
 
     </LinearLayout>
