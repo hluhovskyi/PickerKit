@@ -3,4 +3,9 @@
     <color name="colorPrimary">#333333</color>
     <color name="colorPrimaryDark">#292929</color>
     <color name="colorAccent">#FF4081</color>
+
+    <color name="item_attachment_panel_camera">@android:color/transparent</color>
+    <color name="item_attachment_panel_gallery">#A37AD8</color>
+    <color name="item_attachment_panel_video">#DB6C73</color>
+    <color name="item_attachment_panel_hide">#ACAAB7</color>
 </resources>

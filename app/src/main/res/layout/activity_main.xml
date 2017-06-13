@@ -5,6 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@android:color/white"
     tools:context="com.dewarder.pickerok.MainActivity">
 
     <TextView
@@ -17,5 +18,21 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
+
+    <com.sothree.slidinguppanel.SlidingUpPanelLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="bottom">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+        <com.dewarder.pickerok.panel.AttachmentPanelView
+            android:id="@+id/attachment_panel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+    </com.sothree.slidinguppanel.SlidingUpPanelLayout>
 
 </android.support.constraint.ConstraintLayout>

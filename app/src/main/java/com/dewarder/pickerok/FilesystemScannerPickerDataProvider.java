@@ -39,6 +39,7 @@ public final class FilesystemScannerPickerDataProvider implements PickerDataProv
                     for (String extension : mExtensions) {
                         if (file.getName().endsWith(extension)) {
                             files.add(file);
+                            break;
                         }
                     }
                 });

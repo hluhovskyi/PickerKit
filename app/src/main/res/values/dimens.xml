@@ -3,4 +3,7 @@
     <dimen name="item_category_min_size">144dp</dimen>
     <dimen name="item_picker_image_min_size">96dp</dimen>
     <dimen name="spacing_default">4dp</dimen>
+
+    <dimen name="item_attachment_panel_category_size">104dp</dimen>
+    <dimen name="item_attachment_panel_category_circle_size">56dp</dimen>
 </resources>

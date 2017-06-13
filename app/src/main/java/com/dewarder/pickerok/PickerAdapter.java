@@ -12,7 +12,7 @@ import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
 public class PickerAdapter<T extends PickerItem> extends RecyclerView.Adapter<ItemPickerViewHolder> {
 
-    interface Controller<T> {
+    public interface Controller<T> {
 
         boolean isPicked(T item);
 
