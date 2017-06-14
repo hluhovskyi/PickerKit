@@ -12,6 +12,7 @@
     <CheckBox
         android:id="@+id/item_picker_check_box"
         android:layout_width="40dp"
-        android:layout_height="40dp"/>
+        android:layout_height="40dp"
+        android:layout_gravity="end"/>
 
 </FrameLayout>

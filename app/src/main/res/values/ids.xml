@@ -1,7 +1,13 @@
 <resources>
 
-    <item name="item_attachment_panel_picker_camera" type="id"/>
-    <item name="item_attachment_panel_picker_gallery" type="id"/>
-    <item name="item_attachment_panel_picker_video" type="id"/>
-    <item name="item_attachment_panel_picker_hide" type="id"/>
+    <item name="attachment_panel_category_camera" type="id"/>
+    <item name="attachment_panel_category_gallery" type="id"/>
+    <item name="attachment_panel_category_video" type="id"/>
+    <item name="attachment_panel_category_music" type="id"/>
+    <item name="attachment_panel_category_file" type="id"/>
+    <item name="attachment_panel_category_send_as_file" type="id"/>
+    <item name="attachment_panel_category_contact" type="id"/>
+    <item name="attachment_panel_category_location" type="id"/>
+    <item name="attachment_panel_category_hide" type="id"/>
+    <item name="attachment_panel_category_send" type="id"/>
 </resources>

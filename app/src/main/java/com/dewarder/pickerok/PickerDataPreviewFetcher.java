@@ -19,6 +19,7 @@ public class PickerDataPreviewFetcher implements PreviewFetcher<PickerData> {
     @Override
     public void fetchPreview(PickerData from, Params params, ImageView target) {
         RequestCreator request = mPicasso.load(from.getFile());
+        request.placeholder(R.drawable.placeholder_default);
         if (!params.isEmpty()) {
             request.resize(params.getWidth(), params.getHeight());
             request.centerCrop();

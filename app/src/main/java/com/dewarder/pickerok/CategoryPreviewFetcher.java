@@ -22,6 +22,7 @@ public class CategoryPreviewFetcher implements PreviewFetcher<CategoryData> {
     public void fetchPreview(CategoryData from, Params params, ImageView target) {
         File primaryFile = from.getData().get(0);
         RequestCreator request = mPicasso.load(primaryFile);
+        request.placeholder(R.drawable.placeholder_default);
         if (!params.isEmpty()) {
             request.resize(params.getWidth(), params.getHeight());
             request.centerCrop();

@@ -7,4 +7,15 @@
     <string name="label_cancel">Cancel</string>
     <string name="label_submit">Submit</string>
     <string name="label_tap_to_open">Tap to open</string>
+
+    <string name="label_camera">Camera</string>
+    <string name="label_gallery">Gallery</string>
+    <string name="label_video">Video</string>
+    <string name="label_music">Music</string>
+    <string name="label_file">File</string>
+    <string name="label_send_as_file">Send as file</string>
+    <string name="label_contact">Contact</string>
+    <string name="label_location">Location</string>
+    <string name="label_send">Send</string>
+    <string name="label_send_count">Send (%d)</string>
 </resources>
