@@ -14,6 +14,9 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import com.annimon.stream.Stream;
+import com.dewarder.pickerkit.OnPickerItemCheckListener;
+import com.dewarder.pickerkit.OnPickerItemClickListener;
 import com.dewarder.pickerkit.PickerAdapter;
 import com.dewarder.pickerkit.PickerData;
 import com.dewarder.pickerkit.PickerDataPreviewFetcher;
@@ -21,6 +24,7 @@ import com.dewarder.pickerkit.PreviewFetcher;
 import com.dewarder.pickerkit.R;
 import com.dewarder.pickerkit.SpaceItemDecoration;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -44,7 +48,6 @@ public class AttachmentPanelView extends LinearLayout {
 
     private int mCategorySpanCount = -1;
     private boolean mInitialized;
-
 
     public AttachmentPanelView(Context context) {
         super(context);
@@ -131,8 +134,24 @@ public class AttachmentPanelView extends LinearLayout {
         mCategorySpanCount = spanCount;
     }
 
+    public void clearPicked() {
+        mPickedController.clear();
+    }
+
+    public List<File> getPicked() {
+        return Stream.of(mPickedController.getPicked()).map(PickerData::getFile).toList();
+    }
+
     public void setOnAttachmentPanelCategoryClickListener(@Nullable OnAttachmentPanelCategoryClickListener listener) {
         mCategoryAdapter.setOnAttachmentPanelCategoryClickListener(listener);
+    }
+
+    public void setOnPickerItemClickListener(OnPickerItemClickListener<PickerData> listener) {
+        mPickerAdapter.setOnPickerItemClickListener(listener);
+    }
+
+    public void setOnPickerItemCheckListener(OnPickerItemCheckListener<PickerData> listener) {
+        mPickerAdapter.setOnPickerItemCheckListener(listener);
     }
 
     private static final class PickerController implements PickerAdapter.Controller<PickerData> {
@@ -156,6 +175,10 @@ public class AttachmentPanelView extends LinearLayout {
 
         public Set<PickerData> getPicked() {
             return mPicked;
+        }
+
+        private void clear() {
+            mPicked.clear();
         }
     }
 }

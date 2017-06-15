@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 import android.widget.Toast;
 
 import com.annimon.stream.Stream;
@@ -42,6 +43,22 @@ public class MainActivity extends AppCompatActivity {
 
         mSlidingPanel = (SlidingUpPanelLayout) findViewById(R.id.sliding_panel);
         mSlidingPanel.setFadeOnClickListener(v -> mSlidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN));
+        mSlidingPanel.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
+            @Override
+            public void onPanelSlide(View panel, float slideOffset) {
+
+            }
+
+            @Override
+            public void onPanelStateChanged(View panel, SlidingUpPanelLayout.PanelState previousState, SlidingUpPanelLayout.PanelState newState) {
+                switch (newState) {
+                    case HIDDEN: {
+                        mAttachmentPanel.clearPicked();
+                        break;
+                    }
+                }
+            }
+        });
 
         findViewById(R.id.opener).setOnClickListener(v -> {
             ActivityCompat.requestPermissions(
@@ -61,6 +78,27 @@ public class MainActivity extends AppCompatActivity {
                 AttachmentPanelCategories.location(this),
                 AttachmentPanelCategories.hide(this));
 
+        mAttachmentPanel.setOnPickerItemCheckListener((item, checked) -> {
+            int pickedCount = mAttachmentPanel.getPicked().size();
+            if (pickedCount == 0) {
+                mAttachmentPanel.replaceCategory(
+                        R.id.attachment_panel_category_send,
+                        AttachmentPanelCategories.hide(this));
+            } else if (pickedCount == 1 && checked) {
+                mAttachmentPanel.replaceCategory(
+                        R.id.attachment_panel_category_hide,
+                        AttachmentPanelCategories.send(this, pickedCount));
+            } else {
+                mAttachmentPanel.replaceCategory(
+                        R.id.attachment_panel_category_send,
+                        AttachmentPanelCategories.send(this, pickedCount));
+            }
+        });
+
+        mAttachmentPanel.setOnPickerItemClickListener(item -> {
+
+        });
+
         mAttachmentPanel.setOnAttachmentPanelCategoryClickListener(id -> {
             switch (id) {
                 case R.id.attachment_panel_category_gallery: {
@@ -72,7 +110,20 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 case R.id.attachment_panel_category_hide: {
-                    mAttachmentPanel.replaceCategory(id, AttachmentPanelCategories.send(this, 5));
+                    mSlidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
+                    break;
+                }
+
+                case R.id.attachment_panel_category_send: {
+                    Toast.makeText(this, Stream.of(mAttachmentPanel.getPicked())
+                            .map(File::getName)
+                            .toList()
+                            .toString(), Toast.LENGTH_LONG).show();
+                    mAttachmentPanel.clearPicked();
+                    mAttachmentPanel.replaceCategory(
+                            R.id.attachment_panel_category_send,
+                            AttachmentPanelCategories.hide(this));
+                    mSlidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
                     break;
                 }
             }

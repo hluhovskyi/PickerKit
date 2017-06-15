@@ -28,6 +28,9 @@ public class PickerAdapter<T extends PickerItem> extends RecyclerView.Adapter<It
     private final PreviewFetcher<T> mPreviewFetcher;
     private final ArrayList<T> mItems = new ArrayList<>();
 
+    private OnPickerItemClickListener<T> mOnPickerItemClickListener;
+    private OnPickerItemCheckListener<T> mOnPickerItemCheckListener;
+
     public PickerAdapter(Controller<T> controller, PreviewFetcher<T> previewFetcher) {
         mController = controller;
         mPreviewFetcher = previewFetcher;
@@ -47,18 +50,24 @@ public class PickerAdapter<T extends PickerItem> extends RecyclerView.Adapter<It
     public void onBindViewHolder(ItemPickerViewHolder holder, int position) {
         T item = mItems.get(position);
         holder.getCheckBox().setChecked(mController.isPicked(item));
-        holder.getPreviewTarget().setOnClickListener(v -> {
-            if (mController.isPicked(item)) {
-                mController.onUnpick(item);
-                holder.getCheckBox().setChecked(false);
-            } else {
-                mController.onPick(item);
-                holder.getCheckBox().setChecked(true);
-            }
-        });
         if (holder.hasPreview()) {
             mPreviewFetcher.fetchPreview(item, mPreviewParams, holder.getPreviewTarget());
         }
+        holder.getPreviewTarget().setOnClickListener(v -> {
+            if (mOnPickerItemClickListener != null) {
+                mOnPickerItemClickListener.onPickerItemCLicked(item);
+            }
+        });
+        holder.getCheckBox().setOnCheckedChangeListener((v, isChecked) -> {
+            if (!isChecked) {
+                mController.onUnpick(item);
+            } else {
+                mController.onPick(item);
+            }
+            if (mOnPickerItemCheckListener != null) {
+                mOnPickerItemCheckListener.onPickerItemChecked(item, isChecked);
+            }
+        });
     }
 
     @Override
@@ -76,5 +85,13 @@ public class PickerAdapter<T extends PickerItem> extends RecyclerView.Adapter<It
         mItems.clear();
         mItems.addAll(data);
         notifyDataSetChanged();
+    }
+
+    public void setOnPickerItemClickListener(OnPickerItemClickListener<T> listener) {
+        mOnPickerItemClickListener = listener;
+    }
+
+    public void setOnPickerItemCheckListener(OnPickerItemCheckListener<T> listener) {
+        mOnPickerItemCheckListener = listener;
     }
 }

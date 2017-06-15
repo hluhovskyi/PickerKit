@@ -1,13 +1,69 @@
 apply plugin: 'com.android.library'
 apply plugin: 'me.tatarka.retrolambda'
+apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'com.jfrog.bintray'
+
+ext {
+    artifactVersion = '0.0.9'
+    artifactName = 'pickerkit'
+    siteUrl = 'https://github.com/dewarder/PickerKit'
+    gitUrl = 'https://github.com/dewarder/PickerKit.git'
+}
+
+version = artifactVersion
+group = 'com.dewarder'
+
 
 android {
     compileSdkVersion 25
     buildToolsVersion "25.0.3"
 
+    defaultConfig {
+        minSdkVersion 15
+        targetSdkVersion 25
+        versionCode 1
+        versionName "1.0"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
     compileOptions {
         targetCompatibility 1.8
         sourceCompatibility 1.8
+    }
+}
+
+install {
+    repositories.mavenInstaller {
+        pom {
+            project {
+                packaging 'aar'
+                name artifactName
+                url siteUrl
+                licenses {
+                    license {
+                        name 'The Apache Software License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        id 'dewarder'
+                        name 'Artem Glugovsky'
+                        email 'dewarder@gmail.com'
+                    }
+                }
+                scm {
+                    connection gitUrl
+                    developerConnection gitUrl
+                    url siteUrl
+                }
+            }
+        }
     }
 }
 
@@ -24,4 +80,51 @@ dependencies {
 
     compile 'com.annimon:stream:1.1.7'
     testCompile 'junit:junit:4.12'
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from android.sourceSets.main.java.sourceFiles
+}
+
+task javadoc(type: Javadoc) {
+    source = android.sourceSets.main.java.sourceFiles
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+task classesJar(type: Jar) {
+    from "$buildDir/intermediates/classes/release"
+}
+
+artifacts {
+    archives javadocJar
+    archives sourcesJar
+}
+
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+
+bintray {
+    user = properties['bintray.user']
+    key = properties['bintray.apikey']
+    configurations = ['archives']
+    publish = true
+    pkg {
+        repo = 'maven'
+        name = "$group:$artifactName"
+        userOrg = 'dewarder'
+        licenses = ['Apache-2.0']
+        vcsUrl = gitUrl
+        version {
+            name = artifactVersion
+            desc = 'Fixed touch listener area'
+            released = new Date()
+            vcsTag = "$artifactVersion"
+        }
+    }
 }
