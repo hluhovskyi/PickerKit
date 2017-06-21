@@ -14,25 +14,28 @@ public class PickerAdapter<T extends PickerItem> extends RecyclerView.Adapter<It
 
     public interface Controller<T> {
 
+        List<T> getPicked();
+
         boolean isPicked(T item);
 
         void onPick(T item);
 
         void onUnpick(T item);
+
+        void clearPicked();
     }
 
     private int mItemSize = WRAP_CONTENT;
     private PreviewFetcher.Params mPreviewParams = PreviewFetcher.Params.empty();
 
-    private final Controller<T> mController;
+    private Controller<T> mController;
     private final PreviewFetcher<T> mPreviewFetcher;
     private final ArrayList<T> mItems = new ArrayList<>();
 
     private OnPickerItemClickListener<T> mOnPickerItemClickListener;
     private OnPickerItemCheckListener<T> mOnPickerItemCheckListener;
 
-    public PickerAdapter(Controller<T> controller, PreviewFetcher<T> previewFetcher) {
-        mController = controller;
+    public PickerAdapter(PreviewFetcher<T> previewFetcher) {
         mPreviewFetcher = previewFetcher;
     }
 
@@ -49,6 +52,8 @@ public class PickerAdapter<T extends PickerItem> extends RecyclerView.Adapter<It
     @Override
     public void onBindViewHolder(ItemPickerViewHolder holder, int position) {
         T item = mItems.get(position);
+        //Needed to remove previous listeners that will unpick previous items
+        holder.getCheckBox().setOnCheckedChangeListener(null);
         holder.getCheckBox().setChecked(mController.isPicked(item));
         if (holder.hasPreview()) {
             mPreviewFetcher.fetchPreview(item, mPreviewParams, holder.getPreviewTarget());
@@ -93,5 +98,9 @@ public class PickerAdapter<T extends PickerItem> extends RecyclerView.Adapter<It
 
     public void setOnPickerItemCheckListener(OnPickerItemCheckListener<T> listener) {
         mOnPickerItemCheckListener = listener;
+    }
+
+    public void setPickerController(Controller<T> controller) {
+        mController = controller;
     }
 }

@@ -10,6 +10,7 @@ import com.dewarder.pickerkit.R;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 public class AttachmentPanelCategoryAdapter extends RecyclerView.Adapter<AttachmentPanelPickerViewHolder> {
 
@@ -35,6 +36,12 @@ public class AttachmentPanelCategoryAdapter extends RecyclerView.Adapter<Attachm
     @Override
     public int getItemCount() {
         return mCategories.size();
+    }
+
+    public void setCategories(List<AttachmentPanelCategory> categories) {
+        mCategories.clear();
+        mCategories.addAll(categories);
+        notifyDataSetChanged();
     }
 
     public void add(AttachmentPanelCategory category) {

@@ -97,12 +97,18 @@ public final class PickerActivity extends AppCompatActivity implements
             int itemSize = RecyclerUtils.calculateItemSize(mPickerRecycler, spanCount, mItemMinSize, mItemSpacing);
             mPickerLayoutManager = new GridLayoutManager(this, spanCount);
             mPickerRecycler.addItemDecoration(new GridSpacingItemDecoration(spanCount, mItemSpacing, true));
-            mPickerAdapter = new PickerAdapter<>(this, new PickerDataPreviewFetcher(this));
+            mPickerAdapter = new PickerAdapter<>(new PickerDataPreviewFetcher(this));
+            mPickerAdapter.setPickerController(this);
             mPickerAdapter.setCategoryItemSize(itemSize);
             mPickerAdapter.setData(mData);
             mPickerRecycler.setAdapter(mPickerAdapter);
             mPickerRecycler.setLayoutManager(mPickerLayoutManager);
         });
+    }
+
+    @Override
+    public List<PickerData> getPicked() {
+        return new ArrayList<>(mPickedImages);
     }
 
     @Override
@@ -122,6 +128,11 @@ public final class PickerActivity extends AppCompatActivity implements
         mTotalPicked--;
         mPickerPanel.setPickedCount(mTotalPicked);
         mPickedImages.remove(item);
+    }
+
+    @Override
+    public void clearPicked() {
+        mPickedImages.clear();
     }
 
     @Override

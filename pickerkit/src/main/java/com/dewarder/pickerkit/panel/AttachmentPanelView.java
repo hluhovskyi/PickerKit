@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 
 import com.annimon.stream.Stream;
+import com.dewarder.pickerkit.HashSetPickerDataController;
 import com.dewarder.pickerkit.OnPickerItemCheckListener;
 import com.dewarder.pickerkit.OnPickerItemClickListener;
 import com.dewarder.pickerkit.PickerAdapter;
@@ -26,14 +27,12 @@ import com.dewarder.pickerkit.SpaceItemDecoration;
 
 import java.io.File;
 import java.util.Arrays;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
 public class AttachmentPanelView extends LinearLayout {
 
     private PreviewFetcher<PickerData> mPreviewFetcher;
-    private PickerController mPickedController;
+    private PickerAdapter.Controller<PickerData> mPickedController;
 
     private RecyclerView mPickerRecycler;
     private LinearLayoutManager mPickerLayoutManager;
@@ -79,12 +78,13 @@ public class AttachmentPanelView extends LinearLayout {
         mPickerSpacing = getResources().getDimensionPixelSize(R.dimen.attachment_panel_picker_spacing);
 
         mPreviewFetcher = new PickerDataPreviewFetcher(context);
-        mPickedController = new PickerController();
+        mPickedController = new HashSetPickerDataController();
 
         mPickerRecycler = (RecyclerView) view.findViewById(R.id.attachment_panel_picker_recycler);
         mPickerLayoutManager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
         mPickerRecycler.setLayoutManager(mPickerLayoutManager);
-        mPickerAdapter = new PickerAdapter<>(mPickedController, mPreviewFetcher);
+        mPickerAdapter = new PickerAdapter<>(mPreviewFetcher);
+        mPickerAdapter.setPickerController(mPickedController);
         mPickerRecycler.setAdapter(mPickerAdapter);
         mPickerRecycler.addItemDecoration(SpaceItemDecoration.horizontalAll(mPickerSpacing));
 
@@ -104,6 +104,10 @@ public class AttachmentPanelView extends LinearLayout {
             mPickerAdapter.setCategoryItemSize(mPickerRecycler.getHeight() - mPickerSpacing * 2);
             mInitialized = true;
         }
+    }
+
+    public void setCategories(List<AttachmentPanelCategory> categories) {
+        mCategoryAdapter.setCategories(categories);
     }
 
     public void addCategory(@NonNull AttachmentPanelCategory category) {
@@ -135,7 +139,7 @@ public class AttachmentPanelView extends LinearLayout {
     }
 
     public void clearPicked() {
-        mPickedController.clear();
+        mPickedController.clearPicked();
     }
 
     public List<File> getPicked() {
@@ -154,31 +158,8 @@ public class AttachmentPanelView extends LinearLayout {
         mPickerAdapter.setOnPickerItemCheckListener(listener);
     }
 
-    private static final class PickerController implements PickerAdapter.Controller<PickerData> {
-
-        private final Set<PickerData> mPicked = new LinkedHashSet<>();
-
-        @Override
-        public boolean isPicked(PickerData item) {
-            return mPicked.contains(item);
-        }
-
-        @Override
-        public void onPick(PickerData item) {
-            mPicked.add(item);
-        }
-
-        @Override
-        public void onUnpick(PickerData item) {
-            mPicked.remove(item);
-        }
-
-        public Set<PickerData> getPicked() {
-            return mPicked;
-        }
-
-        private void clear() {
-            mPicked.clear();
-        }
+    public void setPickerController(PickerAdapter.Controller<PickerData> controller) {
+        mPickedController = controller;
+        mPickerAdapter.setPickerController(controller);
     }
 }
