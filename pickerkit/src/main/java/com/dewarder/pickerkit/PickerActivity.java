@@ -32,9 +32,11 @@ public final class PickerActivity extends AppCompatActivity implements
     private static final String EXTRA_DATA = "EXTRA_DATA";
     private static final String EXTRA_PICKED = "EXTRA_PICKED";
     private static final String EXTRA_TOTAL_PICKED = "EXTRA_TOTAL_PICKED";
-    private static final String EXTRA_RESULT = "EXTRA_RESULT_FILES";
+    private static final String EXTRA_RESULT = "EXTRA_RESULT";
+    private static final String EXTRA_LIMIT = "EXTRA_LIMIT";
 
     private int mTotalPicked;
+    private int mLimit;
     private final ArrayList<PickerData> mData = new ArrayList<>();
     private final Set<PickerData> mInitialPicked = new HashSet<>();
     private final Set<PickerData> mPickedImages = new HashSet<>();
@@ -75,6 +77,7 @@ public final class PickerActivity extends AppCompatActivity implements
         List<File> picked = ActivityUtils.getSerializableArgument(this, EXTRA_PICKED);
         String title = getIntent().getExtras().getString(EXTRA_NAME);
         mTotalPicked = getIntent().getExtras().getInt(EXTRA_TOTAL_PICKED, 0);
+        mLimit = getIntent().getExtras().getInt(EXTRA_LIMIT, -1);
 
         mData.addAll(Stream.of(files).map(PickerData::new).toList());
         mInitialPicked.addAll(Stream.of(picked).map(PickerData::new).toList());
@@ -101,6 +104,7 @@ public final class PickerActivity extends AppCompatActivity implements
             mPickerAdapter.setPickerController(this);
             mPickerAdapter.setCategoryItemSize(itemSize);
             mPickerAdapter.setData(mData);
+            mPickerAdapter.setPickEnabled(mLimit - mTotalPicked > 0);
             mPickerRecycler.setAdapter(mPickerAdapter);
             mPickerRecycler.setLayoutManager(mPickerLayoutManager);
         });
@@ -121,6 +125,10 @@ public final class PickerActivity extends AppCompatActivity implements
         mTotalPicked++;
         mPickerPanel.setPickedCount(mTotalPicked);
         mPickedImages.add(item);
+
+        if (mLimit > 0 && (mLimit - mTotalPicked <= 0)) {
+            mPickerAdapter.setPickEnabled(false);
+        }
     }
 
     @Override
@@ -128,6 +136,10 @@ public final class PickerActivity extends AppCompatActivity implements
         mTotalPicked--;
         mPickerPanel.setPickedCount(mTotalPicked);
         mPickedImages.remove(item);
+
+        if (mLimit > 0 && (mLimit - mTotalPicked > 0)) {
+            mPickerAdapter.setPickEnabled(true);
+        }
     }
 
     @Override
@@ -234,6 +246,7 @@ public final class PickerActivity extends AppCompatActivity implements
         private ArrayList<File> mData;
         private ArrayList<File> mPicked;
         private int mTotalPicked;
+        private int mLimit = -1;
 
         public Builder(Activity activity) {
             mActivity = activity;
@@ -269,6 +282,11 @@ public final class PickerActivity extends AppCompatActivity implements
             return this;
         }
 
+        public Builder setLimit(int limit) {
+            mLimit = limit;
+            return this;
+        }
+
         public void start() {
             Intent intent = new Intent(mActivity, PickerActivity.class);
             intent.putExtra(EXTRA_NAME, mName);
@@ -276,6 +294,7 @@ public final class PickerActivity extends AppCompatActivity implements
             intent.putExtra(EXTRA_DATA, mData != null ? mData : new ArrayList<File>());
             intent.putExtra(EXTRA_PICKED, mPicked != null ? mPicked : new ArrayList<File>());
             intent.putExtra(EXTRA_TOTAL_PICKED, mTotalPicked);
+            intent.putExtra(EXTRA_LIMIT, mLimit);
 
             int requestCode = mRequestCode == -1 ? RequestCodeGenerator.generate() : mRequestCode;
             mActivity.startActivityForResult(intent, requestCode);

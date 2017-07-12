@@ -105,6 +105,7 @@ public class MainActivity extends AppCompatActivity {
                     new CategoryActivity.Builder(this)
                             .setAccentColor(ContextCompat.getColor(this, R.color.colorAccent))
                             .setRequestCode(PICKER_REQUEST_CODE)
+                            .setLimit(4)
                             .start();
                     break;
                 }

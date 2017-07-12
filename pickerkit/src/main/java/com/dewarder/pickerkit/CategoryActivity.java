@@ -32,6 +32,7 @@ public final class CategoryActivity extends AppCompatActivity implements
 
     private static final String EXTRA_ACCENT_COLOR = "EXTRA_ACCENT_COLOR";
     private static final String EXTRA_RESULT = "EXTRA_RESULT";
+    private static final String EXTRA_LIMIT = "EXTRA_LIMIT";
 
     private static final int IMAGE_PICKER_ACTIVITY_REQUEST_CODE = 1;
 
@@ -49,6 +50,7 @@ public final class CategoryActivity extends AppCompatActivity implements
     private CategoryAdapter mCategoryAdapter;
 
     private int mAccentColor;
+    private int mLimit;
     private int mCategoryItemMinSize;
     private int mCategoryItemSpacing;
 
@@ -60,6 +62,7 @@ public final class CategoryActivity extends AppCompatActivity implements
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_category);
 
@@ -70,6 +73,7 @@ public final class CategoryActivity extends AppCompatActivity implements
         Bundle extras = getIntent().getExtras();
         int accentColor = extras.getInt(EXTRA_ACCENT_COLOR);
         mAccentColor = accentColor == -1 ? ContextCompat.getColor(this, R.color.colorAccent) : accentColor;
+        mLimit = extras.getInt(EXTRA_LIMIT, -1);
 
         mCategoryItemMinSize = getResources().getDimensionPixelSize(R.dimen.item_category_min_size);
         mCategoryItemSpacing = getResources().getDimensionPixelSize(R.dimen.spacing_default);
@@ -160,6 +164,7 @@ public final class CategoryActivity extends AppCompatActivity implements
                 .setData(category.getData())
                 .setPicked(pickedPart)
                 .setTotalPicked(mPickedData.size())
+                .setLimit(mLimit)
                 .start();
     }
 
@@ -237,6 +242,7 @@ public final class CategoryActivity extends AppCompatActivity implements
                 .setData(mPickedData)
                 .setPicked(mPickedData)
                 .setTotalPicked(mPickedData.size())
+                .setLimit(mLimit)
                 .start();
     }
 
@@ -257,6 +263,7 @@ public final class CategoryActivity extends AppCompatActivity implements
         private final Activity mActivity;
         private int mRequestCode = -1;
         private int mAccentColor = -1;
+        private int mLimit = -1;
 
         public Builder(Activity activity) {
             mActivity = activity;
@@ -272,9 +279,15 @@ public final class CategoryActivity extends AppCompatActivity implements
             return this;
         }
 
+        public Builder setLimit(int limit) {
+            mLimit = limit;
+            return this;
+        }
+
         public void start() {
             Intent intent = new Intent(mActivity, CategoryActivity.class);
             intent.putExtra(EXTRA_ACCENT_COLOR, mAccentColor);
+            intent.putExtra(EXTRA_LIMIT, mLimit);
 
             int requestCode = mRequestCode == -1 ? RequestCodeGenerator.generate() : mRequestCode;
             mActivity.startActivityForResult(intent, requestCode);

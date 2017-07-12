@@ -46,6 +46,7 @@ public class AttachmentPanelView extends LinearLayout {
     private int mCategoryMinWidth;
 
     private int mCategorySpanCount = -1;
+    private int mLimit;
     private boolean mInitialized;
 
     public AttachmentPanelView(Context context) {
@@ -161,5 +162,18 @@ public class AttachmentPanelView extends LinearLayout {
     public void setPickerController(PickerAdapter.Controller<PickerData> controller) {
         mPickedController = controller;
         mPickerAdapter.setPickerController(controller);
+    }
+
+    public void setLimit(int limit) {
+        mLimit = limit;
+        mPickerAdapter.setPickEnabled(mLimit > 0 && mLimit - mPickedController.getPicked().size() > 0);
+    }
+
+    public int getLimit() {
+        return mLimit;
+    }
+
+    public void setPickEnabled(boolean enabled) {
+        mPickerAdapter.setPickEnabled(enabled);
     }
 }

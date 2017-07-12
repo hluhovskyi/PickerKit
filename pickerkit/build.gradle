@@ -4,7 +4,7 @@ apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
 
 ext {
-    artifactVersion = '0.0.2'
+    artifactVersion = '0.0.3'
     artifactName = 'pickerkit'
     siteUrl = 'https://github.com/dewarder/PickerKit'
     gitUrl = 'https://github.com/dewarder/PickerKit.git'
@@ -122,7 +122,7 @@ bintray {
         vcsUrl = gitUrl
         version {
             name = artifactVersion
-            desc = 'Fixes and improvements'
+            desc = 'Add ability to limit attachments'
             released = new Date()
             vcsTag = "$artifactVersion"
         }

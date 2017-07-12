@@ -29,6 +29,7 @@ public class PickerAdapter<T extends PickerItem> extends RecyclerView.Adapter<It
     private PreviewFetcher.Params mPreviewParams = PreviewFetcher.Params.empty();
 
     private Controller<T> mController;
+    private boolean mPickEnabled = true;
     private final PreviewFetcher<T> mPreviewFetcher;
     private final ArrayList<T> mItems = new ArrayList<>();
 
@@ -54,7 +55,15 @@ public class PickerAdapter<T extends PickerItem> extends RecyclerView.Adapter<It
         T item = mItems.get(position);
         //Needed to remove previous listeners that will unpick previous items
         holder.getCheckBox().setOnCheckedChangeListener(null);
-        holder.getCheckBox().setChecked(mController.isPicked(item));
+
+        boolean isPicked = mController.isPicked(item);
+        holder.getCheckBox().setChecked(isPicked);
+        if (!isPicked && !mPickEnabled) {
+            holder.getCheckBox().setVisibility(View.GONE);
+        } else {
+            holder.getCheckBox().setVisibility(View.VISIBLE);
+        }
+
         if (holder.hasPreview()) {
             mPreviewFetcher.fetchPreview(item, mPreviewParams, holder.getPreviewTarget());
         }
@@ -102,5 +111,12 @@ public class PickerAdapter<T extends PickerItem> extends RecyclerView.Adapter<It
 
     public void setPickerController(Controller<T> controller) {
         mController = controller;
+    }
+
+    public void setPickEnabled(boolean pickEnabled) {
+        if (mPickEnabled != pickEnabled) {
+            mPickEnabled = pickEnabled;
+            notifyDataSetChanged();
+        }
     }
 }
