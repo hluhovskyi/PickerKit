@@ -8,7 +8,7 @@ import android.provider.MediaStore;
 import java.io.File;
 import java.util.ArrayList;
 
-public class MediaStoreImagePickerDataProvider implements PickerDataProvider<File> {
+public final class MediaStoreImagePickerDataProvider implements PickerDataProvider<File> {
 
     private final ContentResolver mContentResolver;
 

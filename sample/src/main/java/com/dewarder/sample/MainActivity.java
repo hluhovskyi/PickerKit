@@ -3,6 +3,7 @@ package com.dewarder.sample;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -14,8 +15,9 @@ import android.widget.Toast;
 import com.annimon.stream.Stream;
 import com.dewarder.pickerkit.CategoryActivity;
 import com.dewarder.pickerkit.MediaStoreImagePickerDataProvider;
-import com.dewarder.pickerkit.PickerData;
+import com.dewarder.pickerkit.FilePickerData;
 import com.dewarder.pickerkit.PickerDataProvider;
+import com.dewarder.pickerkit.Result;
 import com.dewarder.pickerkit.panel.AttachmentPanelCategories;
 import com.dewarder.pickerkit.panel.AttachmentPanelView;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
@@ -139,7 +141,7 @@ public class MainActivity extends AppCompatActivity {
                 mPickerDataProvider.request(new PickerDataProvider.Callback<File>() {
                     @Override
                     public void onNext(Collection<File> data) {
-                        List<PickerData> pickerData = Stream.of(data).map(PickerData::new).toList();
+                        List<FilePickerData> pickerData = Stream.of(data).map(FilePickerData::from).toList();
                         mAttachmentPanel.post(() -> mAttachmentPanel.setData(pickerData));
                     }
 
@@ -165,8 +167,8 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (resultCode == RESULT_OK) {
-            List<File> result = CategoryActivity.getResult(data);
-            Toast.makeText(this, Stream.of(result).map(File::getName).toList().toString(), Toast.LENGTH_LONG).show();
+            Result result = CategoryActivity.getResult(data);
+            Toast.makeText(this, Stream.of(result.getPicked()).toList().toString(), Toast.LENGTH_LONG).show();
         } else {
             Toast.makeText(this, "Picker canceled", Toast.LENGTH_LONG).show();
         }

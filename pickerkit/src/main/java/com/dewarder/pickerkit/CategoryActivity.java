@@ -2,6 +2,7 @@ package com.dewarder.pickerkit;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.ColorInt;
 import android.support.annotation.Nullable;
@@ -26,9 +27,10 @@ import java.util.Collection;
 import java.util.List;
 
 public final class CategoryActivity extends AppCompatActivity implements
-        OnCategoryClickListener,
+        OnCategoryClickListener<FileCategoryData>,
         PickerPanelView.OnSubmitClickListener,
-        PickerPanelView.OnCancelClickListener, PickerPanelView.OnCounterClickListener {
+        PickerPanelView.OnCancelClickListener,
+        PickerPanelView.OnCounterClickListener {
 
     private static final String EXTRA_ACCENT_COLOR = "EXTRA_ACCENT_COLOR";
     private static final String EXTRA_RESULT = "EXTRA_RESULT";
@@ -47,7 +49,7 @@ public final class CategoryActivity extends AppCompatActivity implements
 
     private RecyclerView mCategoryRecycler;
     private GridLayoutManager mCategoryLayoutManager;
-    private CategoryAdapter mCategoryAdapter;
+    private CategoryAdapter<FileCategoryData> mCategoryAdapter;
 
     private int mAccentColor;
     private int mLimit;
@@ -56,13 +58,13 @@ public final class CategoryActivity extends AppCompatActivity implements
 
     private final ArrayList<File> mPickedData = new ArrayList<>();
 
-    public static List<File> getResult(Intent intent) {
-        return (List<File>) intent.getSerializableExtra(EXTRA_RESULT);
+    public static Result getResult(Intent intent) {
+        return intent.getParcelableExtra(EXTRA_RESULT);
     }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        setTheme(R.style.AppTheme);
+        setTheme(R.style.PickerActivityTheme);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_category);
 
@@ -107,7 +109,7 @@ public final class CategoryActivity extends AppCompatActivity implements
             int itemSize = RecyclerUtils.calculateItemSize(mCategoryRecycler, spanCount, mCategoryItemMinSize, mCategoryItemSpacing);
             mCategoryLayoutManager = new GridLayoutManager(this, spanCount);
             mCategoryRecycler.addItemDecoration(new GridSpacingItemDecoration(spanCount, mCategoryItemSpacing, true));
-            mCategoryAdapter = new CategoryAdapter(new CategoryPreviewFetcher(this));
+            mCategoryAdapter = new CategoryAdapter<>(new CategoryPreviewFetcher(this));
             mCategoryAdapter.setCategoryItemSize(itemSize);
             mCategoryAdapter.setOnCategoryClickListener(this);
             mCategoryRecycler.setAdapter(mCategoryAdapter);
@@ -126,9 +128,9 @@ public final class CategoryActivity extends AppCompatActivity implements
         mDataProvider.request(new PickerDataProvider.Callback<File>() {
             @Override
             public void onNext(Collection<File> data) {
-                List<CategoryData> categories = Stream.of(data)
+                List<FileCategoryData> categories = Stream.of(data)
                         .chunkBy(File::getParent)
-                        .map(files -> new CategoryData(files.get(0).getParentFile(), files, files.size()))
+                        .map(FileCategoryData::fromFiles)
                         .toList();
 
                 mCategoryRecycler.post(() -> mCategoryAdapter.appendCategories(categories));
@@ -152,7 +154,7 @@ public final class CategoryActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onCategoryClicked(CategoryData category) {
+    public void onCategoryClicked(FileCategoryData category) {
         List<File> pickedPart = Stream.of(mPickedData)
                 .filter(f -> category.getData().contains(f))
                 .toList();
@@ -248,7 +250,8 @@ public final class CategoryActivity extends AppCompatActivity implements
 
     private void submit() {
         Intent intent = new Intent();
-        intent.putExtra(EXTRA_RESULT, new ArrayList<>(mPickedData));
+        Result result = Result.from(Stream.of(mPickedData).map(Uri::fromFile).toList());
+        intent.putExtra(EXTRA_RESULT, result);
         setResult(RESULT_OK, intent);
         finish();
     }
@@ -285,7 +288,8 @@ public final class CategoryActivity extends AppCompatActivity implements
         }
 
         public void start() {
-            Intent intent = new Intent(mActivity, CategoryActivity.class);
+            Intent intent = new Intent();
+            intent.setClassName("com.dewarder.pickerkit", "CategoryActivity");
             intent.putExtra(EXTRA_ACCENT_COLOR, mAccentColor);
             intent.putExtra(EXTRA_LIMIT, mLimit);
 

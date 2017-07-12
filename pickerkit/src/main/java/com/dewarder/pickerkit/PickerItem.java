@@ -1,4 +1,6 @@
 package com.dewarder.pickerkit;
 
-public interface PickerItem {
+public interface PickerItem<T> {
+
+    public T getSource();
 }

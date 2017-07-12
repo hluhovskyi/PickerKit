@@ -10,7 +10,7 @@ import com.squareup.picasso.RequestHandler;
 
 import java.io.IOException;
 
-public class VideoRequestHandler extends RequestHandler {
+public final class VideoRequestHandler extends RequestHandler {
 
     private String[] mExtensions = {"mp4"};
 

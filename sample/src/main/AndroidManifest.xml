@@ -21,7 +21,7 @@
 
         </activity>
 
-        <activity android:name="com.dewarder.pickerkit.CategoryActivity"/>
+        <activity android:name="com.dewarder.pickerkit.PickerActivity"/>
 
     </application>
 

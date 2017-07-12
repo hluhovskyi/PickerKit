@@ -2,15 +2,20 @@ package com.dewarder.pickerkit;
 
 import java.io.File;
 
-public class PickerData implements PickerItem {
+public final class FilePickerData implements PickerItem<File> {
 
     private final File mFile;
 
-    public PickerData(File file) {
+    private FilePickerData(File file) {
         mFile = file;
     }
 
-    public File getFile() {
+    public static FilePickerData from(File file) {
+        return new FilePickerData(file);
+    }
+
+    @Override
+    public File getSource() {
         return mFile;
     }
 
@@ -19,7 +24,7 @@ public class PickerData implements PickerItem {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        PickerData pickerData = (PickerData) o;
+        FilePickerData pickerData = (FilePickerData) o;
 
         return mFile.equals(pickerData.mFile);
     }

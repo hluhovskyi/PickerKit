@@ -1,6 +1,6 @@
 package com.dewarder.pickerkit;
 
-public interface OnCategoryClickListener {
+public interface OnCategoryClickListener<T extends CategoryData<?, ?>> {
 
-    void onCategoryClicked(CategoryData category);
+    void onCategoryClicked(T category);
 }

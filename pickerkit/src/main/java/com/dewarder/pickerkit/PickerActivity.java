@@ -17,6 +17,7 @@ import com.annimon.stream.Stream;
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -25,7 +26,8 @@ import java.util.Set;
 public final class PickerActivity extends AppCompatActivity implements
         PickerPanelView.OnSubmitClickListener,
         PickerPanelView.OnCancelClickListener,
-        PickerAdapter.Controller<PickerData> {
+        PickerAdapter.DataController<FilePickerData>,
+        PickerAdapter.PickerController<FilePickerData> {
 
     private static final String EXTRA_NAME = "EXTRA_NAME";
     private static final String EXTRA_ACCENT_COLOR = "EXTRA_ACCENT_COLOR";
@@ -37,13 +39,13 @@ public final class PickerActivity extends AppCompatActivity implements
 
     private int mTotalPicked;
     private int mLimit;
-    private final ArrayList<PickerData> mData = new ArrayList<>();
-    private final Set<PickerData> mInitialPicked = new HashSet<>();
-    private final Set<PickerData> mPickedImages = new HashSet<>();
+    private final ArrayList<FilePickerData> mData = new ArrayList<>();
+    private final Set<FilePickerData> mInitialPicked = new HashSet<>();
+    private final Set<FilePickerData> mPickedImages = new HashSet<>();
 
     private RecyclerView mPickerRecycler;
     private GridLayoutManager mPickerLayoutManager;
-    private PickerAdapter<PickerData> mPickerAdapter;
+    private PickerAdapter<FilePickerData> mPickerAdapter;
 
     private Toolbar mToolbar;
     private PickerPanelView mPickerPanel;
@@ -58,6 +60,7 @@ public final class PickerActivity extends AppCompatActivity implements
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        setTheme(R.style.PickerActivityTheme);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.acitivty_picker);
 
@@ -79,8 +82,8 @@ public final class PickerActivity extends AppCompatActivity implements
         mTotalPicked = getIntent().getExtras().getInt(EXTRA_TOTAL_PICKED, 0);
         mLimit = getIntent().getExtras().getInt(EXTRA_LIMIT, -1);
 
-        mData.addAll(Stream.of(files).map(PickerData::new).toList());
-        mInitialPicked.addAll(Stream.of(picked).map(PickerData::new).toList());
+        mData.addAll(Stream.of(files).map(FilePickerData::from).toList());
+        mInitialPicked.addAll(Stream.of(picked).map(FilePickerData::from).toList());
         mPickedImages.addAll(mInitialPicked);
 
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -100,51 +103,52 @@ public final class PickerActivity extends AppCompatActivity implements
             int itemSize = RecyclerUtils.calculateItemSize(mPickerRecycler, spanCount, mItemMinSize, mItemSpacing);
             mPickerLayoutManager = new GridLayoutManager(this, spanCount);
             mPickerRecycler.addItemDecoration(new GridSpacingItemDecoration(spanCount, mItemSpacing, true));
-            mPickerAdapter = new PickerAdapter<>(new PickerDataPreviewFetcher(this));
-            mPickerAdapter.setPickerController(this);
-            mPickerAdapter.setCategoryItemSize(itemSize);
-            mPickerAdapter.setData(mData);
-            mPickerAdapter.setPickEnabled(mLimit - mTotalPicked > 0);
+            mPickerAdapter = new PickerAdapter.Builder<FilePickerData>()
+                    .setPreviewFetcher(new FilePickerDataPreviewFetcher(this))
+                    .setDataController(this)
+                    .setPickerController(this)
+                    .setPreviewParams(PreviewFetcher.Params.of(itemSize, itemSize))
+                    .setData(mData)
+                    .setPickEnabled(mLimit - mTotalPicked > 0)
+                    .build();
+
             mPickerRecycler.setAdapter(mPickerAdapter);
             mPickerRecycler.setLayoutManager(mPickerLayoutManager);
         });
     }
 
     @Override
-    public List<PickerData> getPicked() {
+    public List<FilePickerData> getPicked() {
         return new ArrayList<>(mPickedImages);
     }
 
     @Override
-    public boolean isPicked(PickerData item) {
+    public boolean isPicked(FilePickerData item) {
         return mPickedImages.contains(item);
     }
 
     @Override
-    public void onPick(PickerData item) {
+    public void onPick(FilePickerData item) {
         mTotalPicked++;
         mPickerPanel.setPickedCount(mTotalPicked);
         mPickedImages.add(item);
-
-        if (mLimit > 0 && (mLimit - mTotalPicked <= 0)) {
-            mPickerAdapter.setPickEnabled(false);
-        }
     }
 
     @Override
-    public void onUnpick(PickerData item) {
+    public void onUnpick(FilePickerData item) {
         mTotalPicked--;
         mPickerPanel.setPickedCount(mTotalPicked);
         mPickedImages.remove(item);
-
-        if (mLimit > 0 && (mLimit - mTotalPicked > 0)) {
-            mPickerAdapter.setPickEnabled(true);
-        }
     }
 
     @Override
     public void clearPicked() {
         mPickedImages.clear();
+    }
+
+    @Override
+    public boolean isPickEnabled(Collection<FilePickerData> items) {
+        return mLimit <= 0 || mLimit - mTotalPicked > 0;
     }
 
     @Override
@@ -176,14 +180,14 @@ public final class PickerActivity extends AppCompatActivity implements
     private List<File> getChecked() {
         return Stream.of(mPickedImages)
                 .filterNot(mInitialPicked::contains)
-                .map(PickerData::getFile)
+                .map(FilePickerData::getSource)
                 .toList();
     }
 
     private List<File> getUnchecked() {
         return Stream.of(mData)
                 .filterNot(mPickedImages::contains)
-                .map(PickerData::getFile)
+                .map(FilePickerData::getSource)
                 .toList();
     }
 
@@ -194,7 +198,7 @@ public final class PickerActivity extends AppCompatActivity implements
         finish();
     }
 
-    public static class Result implements Serializable {
+    static class Result implements Serializable {
 
         private final List<File> mChecked;
         private final List<File> mUnchecked;

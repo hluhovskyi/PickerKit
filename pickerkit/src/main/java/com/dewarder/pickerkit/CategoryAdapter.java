@@ -10,16 +10,16 @@ import java.util.Collection;
 
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
-public class CategoryAdapter extends RecyclerView.Adapter<CategoryViewHolder> {
+public class CategoryAdapter<T extends CategoryData<?, ?>> extends RecyclerView.Adapter<CategoryViewHolder> {
 
-    private final PreviewFetcher<CategoryData> mPreviewFetcher;
-    private final ArrayList<CategoryData> mCategories = new ArrayList<>();
+    private final PreviewFetcher<T> mPreviewFetcher;
+    private final ArrayList<T> mCategories = new ArrayList<>();
 
     private int mCategoryItemSize = WRAP_CONTENT;
     private PreviewFetcher.Params mPreviewParams = PreviewFetcher.Params.empty();
-    private OnCategoryClickListener mOnCategoryClickListener;
+    private OnCategoryClickListener<T> mOnCategoryClickListener;
 
-    public CategoryAdapter(PreviewFetcher<CategoryData> previewFetcher) {
+    public CategoryAdapter(PreviewFetcher<T> previewFetcher) {
         mPreviewFetcher = previewFetcher;
     }
 
@@ -35,7 +35,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryViewHolder> {
 
     @Override
     public void onBindViewHolder(CategoryViewHolder holder, int position) {
-        CategoryData data = mCategories.get(position);
+        T data = mCategories.get(position);
         holder.setName(data.getName());
         holder.setItemCount(data.getItemCount());
         holder.itemView.setOnClickListener(v -> notifyCategoryClicked(data));
@@ -58,17 +58,17 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryViewHolder> {
         notifyDataSetChanged();
     }
 
-    public void appendCategories(Collection<CategoryData> categories) {
+    public void appendCategories(Collection<T> categories) {
         int previousSize = mCategories.size();
         mCategories.addAll(categories);
         notifyItemRangeInserted(previousSize, categories.size());
     }
 
-    public void setOnCategoryClickListener(OnCategoryClickListener listener) {
+    public void setOnCategoryClickListener(OnCategoryClickListener<T> listener) {
         mOnCategoryClickListener = listener;
     }
 
-    private void notifyCategoryClicked(CategoryData category) {
+    private void notifyCategoryClicked(T category) {
         if (mOnCategoryClickListener != null) {
             mOnCategoryClickListener.onCategoryClicked(category);
         }

@@ -10,15 +10,13 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class MediaStoreVideoPickerDataProvider implements PickerDataProvider<File> {
+public final class MediaStoreVideoPickerDataProvider implements PickerDataProvider<File> {
 
     private final ExecutorService mExecutor = Executors.newSingleThreadExecutor();
-    private final Context mContext;
     private final ContentResolver mContentResolver;
     private final String[] mExtensions;
 
     private MediaStoreVideoPickerDataProvider(Context context, String[] extensions) {
-        mContext = context;
         mContentResolver = context.getContentResolver();
         mExtensions = extensions;
     }

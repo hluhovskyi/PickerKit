@@ -5,27 +5,27 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public final class HashSetPickerDataController implements PickerAdapter.Controller<PickerData> {
+public final class HashSetDataController<T> implements PickerAdapter.DataController<T> {
 
-    private final Set<PickerData> mPicked = new HashSet<>();
+    private final Set<T> mPicked = new HashSet<>();
 
     @Override
-    public List<PickerData> getPicked() {
+    public List<T> getPicked() {
         return new ArrayList<>(mPicked);
     }
 
     @Override
-    public boolean isPicked(PickerData item) {
+    public boolean isPicked(T item) {
         return mPicked.contains(item);
     }
 
     @Override
-    public void onPick(PickerData item) {
+    public void onPick(T item) {
         mPicked.add(item);
     }
 
     @Override
-    public void onUnpick(PickerData item) {
+    public void onUnpick(T item) {
         mPicked.remove(item);
     }
 

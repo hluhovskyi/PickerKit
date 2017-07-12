@@ -8,7 +8,7 @@ import com.squareup.picasso.RequestCreator;
 
 import java.io.File;
 
-public class CategoryPreviewFetcher implements PreviewFetcher<CategoryData> {
+public class CategoryPreviewFetcher implements PreviewFetcher<FileCategoryData> {
 
     private final Picasso mPicasso;
 
@@ -19,7 +19,7 @@ public class CategoryPreviewFetcher implements PreviewFetcher<CategoryData> {
     }
 
     @Override
-    public void fetchPreview(CategoryData from, Params params, ImageView target) {
+    public void fetchPreview(FileCategoryData from, Params params, ImageView target) {
         File primaryFile = from.getData().get(0);
         RequestCreator request = mPicasso.load(primaryFile);
         request.placeholder(R.drawable.placeholder_default);
