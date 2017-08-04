@@ -20,7 +20,7 @@ import com.dewarder.pickerkit.FilePickerDataPreviewFetcher;
 import com.dewarder.pickerkit.HashSetDataController;
 import com.dewarder.pickerkit.OnPickerItemCheckListener;
 import com.dewarder.pickerkit.OnPickerItemClickListener;
-import com.dewarder.pickerkit.PickerAdapter;
+import com.dewarder.pickerkit.PickerItemAdapter;
 import com.dewarder.pickerkit.R;
 import com.dewarder.pickerkit.SpaceItemDecoration;
 
@@ -31,11 +31,11 @@ import java.util.List;
 
 public class AttachmentPanelView extends LinearLayout {
 
-    private PickerAdapter.DataController<FilePickerData> mDataController;
+    private PickerItemAdapter.DataController<FilePickerData> mDataController;
 
     private RecyclerView mPickerRecycler;
     private LinearLayoutManager mPickerLayoutManager;
-    private PickerAdapter<FilePickerData> mPickerAdapter;
+    private PickerItemAdapter<FilePickerData> mPickerAdapter;
 
     private RecyclerView mCategoryRecycler;
     private GridLayoutManager mCategoryLayoutManager;
@@ -82,7 +82,7 @@ public class AttachmentPanelView extends LinearLayout {
         mPickerRecycler = (RecyclerView) view.findViewById(R.id.attachment_panel_picker_recycler);
         mPickerLayoutManager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
         mPickerRecycler.setLayoutManager(mPickerLayoutManager);
-        mPickerAdapter = new PickerAdapter.Builder<FilePickerData>()
+        mPickerAdapter = new PickerItemAdapter.Builder<FilePickerData>()
                 .setPreviewFetcher(new FilePickerDataPreviewFetcher(context))
                 .setDataController(mDataController)
                 .build();
@@ -164,7 +164,7 @@ public class AttachmentPanelView extends LinearLayout {
         mPickerAdapter.setOnPickerItemCheckListener(listener);
     }
 
-/*    public void setPickerController(PickerAdapter.Controller<FilePickerData> controller) {
+/*    public void setPickerController(PickerItemAdapter.Controller<FilePickerData> controller) {
         mDataController = controller;
         mPickerAdapter.setPickerController(controller);
     }*/

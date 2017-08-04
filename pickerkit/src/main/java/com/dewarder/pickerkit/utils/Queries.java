@@ -1,4 +1,4 @@
-package com.dewarder.pickerkit;
+package com.dewarder.pickerkit.utils;
 
 import android.content.ContentResolver;
 import android.database.Cursor;

@@ -5,6 +5,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.provider.MediaStore;
 
+import com.dewarder.pickerkit.utils.Queries;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;

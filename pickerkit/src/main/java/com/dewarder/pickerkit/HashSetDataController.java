@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public final class HashSetDataController<T> implements PickerAdapter.DataController<T> {
+public final class HashSetDataController<T> implements PickerItemAdapter.DataController<T> {
 
     private final Set<T> mPicked = new HashSet<>();
 

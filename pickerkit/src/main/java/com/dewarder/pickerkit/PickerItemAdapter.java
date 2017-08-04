@@ -14,7 +14,7 @@ import java.util.List;
 
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
-public final class PickerAdapter<T extends PickerItem> extends RecyclerView.Adapter<ItemPickerViewHolder> {
+public final class PickerItemAdapter<T extends PickerItem> extends RecyclerView.Adapter<ItemPickerViewHolder> {
 
     public interface DataController<T> {
 
@@ -29,9 +29,9 @@ public final class PickerAdapter<T extends PickerItem> extends RecyclerView.Adap
         void clearPicked();
     }
 
-    public interface PickerController<T> {
+    public interface AccessibilityController<T> {
 
-        boolean isPickEnabled(Collection<T> items);
+        boolean canPickMore(Collection<T> items);
     }
 
     private int mItemSize = WRAP_CONTENT;
@@ -39,19 +39,19 @@ public final class PickerAdapter<T extends PickerItem> extends RecyclerView.Adap
     private boolean mPickEnabled = true;
 
     private final DataController<T> mDataController;
-    private final PickerController<T> mPickerController;
+    private final AccessibilityController<T> mAccessibilityController;
     private final PreviewFetcher<T> mPreviewFetcher;
     private final ArrayList<T> mItems = new ArrayList<>();
 
     private OnPickerItemClickListener<T> mOnPickerItemClickListener;
     private OnPickerItemCheckListener<T> mOnPickerItemCheckListener;
 
-    private PickerAdapter(@NonNull DataController<T> dataController,
-                          @Nullable PickerController<T> pickerController,
-                          @NonNull PreviewFetcher<T> previewFetcher) {
+    private PickerItemAdapter(@NonNull DataController<T> dataController,
+                              @Nullable AccessibilityController<T> accessibilityController,
+                              @NonNull PreviewFetcher<T> previewFetcher) {
 
         mDataController = dataController;
-        mPickerController = pickerController;
+        mAccessibilityController = accessibilityController;
         mPreviewFetcher = previewFetcher;
     }
 
@@ -126,8 +126,8 @@ public final class PickerAdapter<T extends PickerItem> extends RecyclerView.Adap
     }
 
     private void invalidatePickEnabled() {
-        if (mPickerController != null) {
-            boolean enabled = mPickerController.isPickEnabled(mDataController.getPicked());
+        if (mAccessibilityController != null) {
+            boolean enabled = mAccessibilityController.canPickMore(mDataController.getPicked());
             setPickEnabled(enabled);
         }
     }
@@ -142,7 +142,7 @@ public final class PickerAdapter<T extends PickerItem> extends RecyclerView.Adap
     public final static class Builder<T extends PickerItem> {
 
         private DataController<T> mDataController;
-        private PickerController<T> mPickerController;
+        private AccessibilityController<T> mAccessibilityController;
         private PreviewFetcher<T> mPreviewFetcher;
         private OnPickerItemClickListener<T> mOnPickerItemClickListener;
         private OnPickerItemCheckListener<T> mOnPickerItemCheckListener;
@@ -155,8 +155,8 @@ public final class PickerAdapter<T extends PickerItem> extends RecyclerView.Adap
             return this;
         }
 
-        public Builder<T> setPickerController(@Nullable PickerController<T> controller) {
-            mPickerController = controller;
+        public Builder<T> setAccessibilityController(@Nullable AccessibilityController<T> controller) {
+            mAccessibilityController = controller;
             return this;
         }
 
@@ -190,13 +190,13 @@ public final class PickerAdapter<T extends PickerItem> extends RecyclerView.Adap
             return this;
         }
 
-        public PickerAdapter<T> build() {
+        public PickerItemAdapter<T> build() {
             if (mPreviewFetcher == null) {
                 throw new IllegalStateException("PreviewFetcher can't be null. Set it via `setPreviewFetcher` call.");
             }
             DataController<T> dataController = mDataController != null ? mDataController : new HashSetDataController();
 
-            PickerAdapter<T> adapter = new PickerAdapter<T>(dataController, mPickerController, mPreviewFetcher);
+            PickerItemAdapter<T> adapter = new PickerItemAdapter<T>(dataController, mAccessibilityController, mPreviewFetcher);
             adapter.mItems.addAll(mData);
             adapter.mPickEnabled = mPickEnabled;
             adapter.mPreviewParams = mPreviewParams != null ? mPreviewParams : PreviewFetcher.Params.empty();

@@ -27,8 +27,8 @@ import java.util.Set;
 public final class PickerActivity extends AppCompatActivity implements
         PickerPanelView.OnSubmitClickListener,
         PickerPanelView.OnCancelClickListener,
-        PickerAdapter.DataController<FilePickerData>,
-        PickerAdapter.PickerController<FilePickerData> {
+        PickerItemAdapter.DataController<FilePickerData>,
+        PickerItemAdapter.AccessibilityController<FilePickerData> {
 
     private static final String EXTRA_NAME = "EXTRA_NAME";
     private static final String EXTRA_ACCENT_COLOR = "EXTRA_ACCENT_COLOR";
@@ -46,7 +46,7 @@ public final class PickerActivity extends AppCompatActivity implements
 
     private RecyclerView mPickerRecycler;
     private GridLayoutManager mPickerLayoutManager;
-    private PickerAdapter<FilePickerData> mPickerAdapter;
+    private PickerItemAdapter<FilePickerData> mPickerAdapter;
 
     private Toolbar mToolbar;
     private PickerPanelView mPickerPanel;
@@ -100,10 +100,10 @@ public final class PickerActivity extends AppCompatActivity implements
             int itemSize = RecyclerUtils.calculateItemSize(mPickerRecycler, spanCount, mItemMinSize, mItemSpacing);
             mPickerLayoutManager = new GridLayoutManager(this, spanCount);
             mPickerRecycler.addItemDecoration(new GridSpacingItemDecoration(spanCount, mItemSpacing, true));
-            mPickerAdapter = new PickerAdapter.Builder<FilePickerData>()
+            mPickerAdapter = new PickerItemAdapter.Builder<FilePickerData>()
                     .setPreviewFetcher(new FilePickerDataPreviewFetcher(this))
                     .setDataController(this)
-                    .setPickerController(this)
+                    .setAccessibilityController(this)
                     .setPreviewParams(PreviewFetcher.Params.of(itemSize, itemSize))
                     .setData(mData)
                     .setPickEnabled(mLimit - mTotalPicked > 0)
@@ -144,7 +144,7 @@ public final class PickerActivity extends AppCompatActivity implements
     }
 
     @Override
-    public boolean isPickEnabled(Collection<FilePickerData> items) {
+    public boolean canPickMore(Collection<FilePickerData> items) {
         return mLimit <= 0 || mLimit - mTotalPicked > 0;
     }
 
