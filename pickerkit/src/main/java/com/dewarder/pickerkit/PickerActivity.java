@@ -13,6 +13,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 import com.annimon.stream.Stream;
+import com.dewarder.pickerkit.utils.Activities;
 
 import java.io.File;
 import java.io.Serializable;
@@ -67,17 +68,13 @@ public final class PickerActivity extends AppCompatActivity implements
         mItemMinSize = getResources().getDimensionPixelSize(R.dimen.item_picker_image_min_size);
         mItemSpacing = getResources().getDimensionPixelSize(R.dimen.spacing_default);
 
-        if (!ActivityUtils.hasArguments(this)) {
-            throw new IllegalStateException("PickerActivity must be instantiated via Builder");
-        }
-
         Bundle extras = getIntent().getExtras();
 
         int accentColor = extras.getInt(EXTRA_ACCENT_COLOR);
         mAccentColor = accentColor == -1 ? ContextCompat.getColor(this, R.color.colorAccent) : accentColor;
 
-        List<File> files = ActivityUtils.getSerializableArgument(this, EXTRA_DATA);
-        List<File> picked = ActivityUtils.getSerializableArgument(this, EXTRA_PICKED);
+        List<File> files = Activities.getSerializableArgument(this, EXTRA_DATA);
+        List<File> picked = Activities.getSerializableArgument(this, EXTRA_PICKED);
         String title = getIntent().getExtras().getString(EXTRA_NAME);
         mTotalPicked = getIntent().getExtras().getInt(EXTRA_TOTAL_PICKED, 0);
         mLimit = getIntent().getExtras().getInt(EXTRA_LIMIT, -1);

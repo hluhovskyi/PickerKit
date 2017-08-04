@@ -1,25 +1,22 @@
 package com.dewarder.sample;
 
-import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Toast;
 
 import com.annimon.stream.Stream;
 import com.dewarder.pickerkit.CategoryActivity;
-import com.dewarder.pickerkit.MediaStoreImagePickerDataProvider;
 import com.dewarder.pickerkit.FilePickerData;
+import com.dewarder.pickerkit.MediaStoreImagePickerDataProvider;
 import com.dewarder.pickerkit.PickerDataProvider;
+import com.dewarder.pickerkit.PickerKit;
 import com.dewarder.pickerkit.Result;
-import com.dewarder.pickerkit.panel.AttachmentPanelCategories;
 import com.dewarder.pickerkit.panel.AttachmentPanelView;
+import com.dewarder.pickerkit.panel.PickerCategories;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.io.File;
@@ -63,37 +60,37 @@ public class MainActivity extends AppCompatActivity {
         });
 
         findViewById(R.id.opener).setOnClickListener(v -> {
-            ActivityCompat.requestPermissions(
-                    this,
-                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                    PERMISSION_REQUEST_CODE);
+            PickerKit.buildPanelPicker()
+                    .setStartPoint(v)
+                    .addPickerCategories(PickerCategories.all(this))
+                    .start(this);
         });
 
         mAttachmentPanel = (AttachmentPanelView) findViewById(R.id.attachment_panel);
         mAttachmentPanel.addCategories(
-                AttachmentPanelCategories.camera(this),
-                AttachmentPanelCategories.gallery(this),
-                AttachmentPanelCategories.video(this),
-                AttachmentPanelCategories.music(this),
-                AttachmentPanelCategories.file(this),
-                AttachmentPanelCategories.contact(this),
-                AttachmentPanelCategories.location(this),
-                AttachmentPanelCategories.hide(this));
+                PickerCategories.camera(this),
+                PickerCategories.gallery(this),
+                PickerCategories.video(this),
+                PickerCategories.music(this),
+                PickerCategories.file(this),
+                PickerCategories.contact(this),
+                PickerCategories.location(this),
+                PickerCategories.hide(this));
 
         mAttachmentPanel.setOnPickerItemCheckListener((item, checked) -> {
             int pickedCount = mAttachmentPanel.getPicked().size();
             if (pickedCount == 0) {
                 mAttachmentPanel.replaceCategory(
                         R.id.attachment_panel_category_send,
-                        AttachmentPanelCategories.hide(this));
+                        PickerCategories.hide(this));
             } else if (pickedCount == 1 && checked) {
                 mAttachmentPanel.replaceCategory(
                         R.id.attachment_panel_category_hide,
-                        AttachmentPanelCategories.send(this, pickedCount));
+                        PickerCategories.send(this, pickedCount));
             } else {
                 mAttachmentPanel.replaceCategory(
                         R.id.attachment_panel_category_send,
-                        AttachmentPanelCategories.send(this, pickedCount));
+                        PickerCategories.send(this, pickedCount));
             }
         });
 
@@ -102,34 +99,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         mAttachmentPanel.setOnAttachmentPanelCategoryClickListener(id -> {
-            switch (id) {
-                case R.id.attachment_panel_category_gallery: {
-                    new CategoryActivity.Builder(this)
-                            .setAccentColor(ContextCompat.getColor(this, R.color.colorAccent))
-                            .setRequestCode(PICKER_REQUEST_CODE)
-                            .setLimit(4)
-                            .start();
-                    break;
-                }
 
-                case R.id.attachment_panel_category_hide: {
-                    mSlidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
-                    break;
-                }
-
-                case R.id.attachment_panel_category_send: {
-                    Toast.makeText(this, Stream.of(mAttachmentPanel.getPicked())
-                            .map(File::getName)
-                            .toList()
-                            .toString(), Toast.LENGTH_LONG).show();
-                    mAttachmentPanel.clearPicked();
-                    mAttachmentPanel.replaceCategory(
-                            R.id.attachment_panel_category_send,
-                            AttachmentPanelCategories.hide(this));
-                    mSlidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
-                    break;
-                }
-            }
         });
     }
 

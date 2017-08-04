@@ -1,0 +1,22 @@
+<com.sothree.slidinguppanel.SlidingUpPanelLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/sliding_panel"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="bottom"
+    app:umanoClipPanel="false"
+    app:umanoInitialState="expanded"
+    app:umanoPanelHeight="0dp">
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+    <com.dewarder.pickerkit.panel.AttachmentPanelView
+        android:id="@+id/attachment_panel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"/>
+
+</com.sothree.slidinguppanel.SlidingUpPanelLayout>

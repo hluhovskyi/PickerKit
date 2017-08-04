@@ -68,10 +68,6 @@ public final class CategoryActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_category);
 
-        if (!ActivityUtils.hasArguments(this)) {
-            throw new IllegalStateException("CategoryActivity must be instantiated via Builder");
-        }
-
         Bundle extras = getIntent().getExtras();
         int accentColor = extras.getInt(EXTRA_ACCENT_COLOR);
         mAccentColor = accentColor == -1 ? ContextCompat.getColor(this, R.color.colorAccent) : accentColor;

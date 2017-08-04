@@ -14,7 +14,7 @@ import java.util.List;
 
 public class AttachmentPanelCategoryAdapter extends RecyclerView.Adapter<AttachmentPanelPickerViewHolder> {
 
-    private final ArrayList<AttachmentPanelCategory> mCategories = new ArrayList<>();
+    private final ArrayList<PickerCategory> mCategories = new ArrayList<>();
     private OnAttachmentPanelCategoryClickListener mOnAttachmentPanelCategoryClickListener;
 
     @Override
@@ -25,7 +25,7 @@ public class AttachmentPanelCategoryAdapter extends RecyclerView.Adapter<Attachm
 
     @Override
     public void onBindViewHolder(AttachmentPanelPickerViewHolder holder, int position) {
-        AttachmentPanelCategory item = mCategories.get(position);
+        PickerCategory item = mCategories.get(position);
         holder.itemView.setId(item.getId());
         holder.setName(item.getName());
         holder.setCircleIcon(item.getIcon());
@@ -38,23 +38,23 @@ public class AttachmentPanelCategoryAdapter extends RecyclerView.Adapter<Attachm
         return mCategories.size();
     }
 
-    public void setCategories(List<AttachmentPanelCategory> categories) {
+    public void setCategories(List<PickerCategory> categories) {
         mCategories.clear();
         mCategories.addAll(categories);
         notifyDataSetChanged();
     }
 
-    public void add(AttachmentPanelCategory category) {
+    public void add(PickerCategory category) {
         mCategories.add(category);
         notifyDataSetChanged();
     }
 
-    public void addAll(Collection<AttachmentPanelCategory> categories) {
+    public void addAll(Collection<PickerCategory> categories) {
         mCategories.addAll(categories);
         notifyDataSetChanged();
     }
 
-    public void replace(@IdRes int oldCategoryId, AttachmentPanelCategory newCategory) {
+    public void replace(@IdRes int oldCategoryId, PickerCategory newCategory) {
         int index = findCategoryById(oldCategoryId);
         mCategories.set(index, newCategory);
         notifyItemChanged(index);
@@ -86,7 +86,7 @@ public class AttachmentPanelCategoryAdapter extends RecyclerView.Adapter<Attachm
         mOnAttachmentPanelCategoryClickListener = listener;
     }
 
-    private void notifyCategoryClicked(AttachmentPanelCategory item) {
+    private void notifyCategoryClicked(PickerCategory item) {
         if (mOnAttachmentPanelCategoryClickListener != null) {
             mOnAttachmentPanelCategoryClickListener.onPanelPickerClicked(item.getId());
         }

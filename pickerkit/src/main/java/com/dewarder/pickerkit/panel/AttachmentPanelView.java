@@ -16,15 +16,16 @@ import android.widget.LinearLayout;
 
 import com.annimon.stream.Stream;
 import com.dewarder.pickerkit.FilePickerData;
+import com.dewarder.pickerkit.FilePickerDataPreviewFetcher;
 import com.dewarder.pickerkit.HashSetDataController;
 import com.dewarder.pickerkit.OnPickerItemCheckListener;
 import com.dewarder.pickerkit.OnPickerItemClickListener;
 import com.dewarder.pickerkit.PickerAdapter;
-import com.dewarder.pickerkit.FilePickerDataPreviewFetcher;
 import com.dewarder.pickerkit.R;
 import com.dewarder.pickerkit.SpaceItemDecoration;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -107,19 +108,23 @@ public class AttachmentPanelView extends LinearLayout {
         }
     }
 
-    public void setCategories(List<AttachmentPanelCategory> categories) {
+    public void setCategories(List<PickerCategory> categories) {
         mCategoryAdapter.setCategories(categories);
     }
 
-    public void addCategory(@NonNull AttachmentPanelCategory category) {
+    public void addCategory(@NonNull PickerCategory category) {
         mCategoryAdapter.add(category);
     }
 
-    public void addCategories(@NonNull AttachmentPanelCategory... categories) {
+    public void addCategories(@NonNull List<PickerCategory> categories) {
+        mCategoryAdapter.addAll(new ArrayList<>(categories));
+    }
+
+    public void addCategories(@NonNull PickerCategory... categories) {
         mCategoryAdapter.addAll(Arrays.asList(categories));
     }
 
-    public void replaceCategory(@IdRes int oldCategoryId, @NonNull AttachmentPanelCategory newCategory) {
+    public void replaceCategory(@IdRes int oldCategoryId, @NonNull PickerCategory newCategory) {
         mCategoryAdapter.replace(oldCategoryId, newCategory);
     }
 

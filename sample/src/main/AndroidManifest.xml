@@ -23,6 +23,10 @@
 
         <activity android:name="com.dewarder.pickerkit.PickerActivity"/>
 
+        <activity
+            android:name="com.dewarder.pickerkit.activity.PanelPickerActivity"
+            android:theme="@style/PickerActivityTransparentTheme"/>
+
     </application>
 
 </manifest>

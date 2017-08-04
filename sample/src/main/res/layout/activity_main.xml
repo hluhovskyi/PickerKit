@@ -18,8 +18,8 @@
 
             <View
                 android:id="@+id/opener"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
                 android:layout_gravity="center"
                 android:background="#F00"/>
 
