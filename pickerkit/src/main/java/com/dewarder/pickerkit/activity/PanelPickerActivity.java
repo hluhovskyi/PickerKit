@@ -10,13 +10,14 @@ import android.view.View;
 import android.view.ViewAnimationUtils;
 
 import com.annimon.stream.Stream;
+import com.dewarder.pickerkit.config.PickerConfig;
 import com.dewarder.pickerkit.utils.Activities;
 import com.dewarder.pickerkit.FilePickerData;
 import com.dewarder.pickerkit.ImmutablePoint;
 import com.dewarder.pickerkit.MediaStoreImagePickerDataProvider;
 import com.dewarder.pickerkit.PickerDataProvider;
 import com.dewarder.pickerkit.R;
-import com.dewarder.pickerkit.config.PanelPickerConfig;
+import com.dewarder.pickerkit.config.PickerPanelConfig;
 import com.dewarder.pickerkit.panel.AttachmentPanelView;
 import com.dewarder.pickerkit.panel.OnAttachmentPanelCategoryClickListener;
 import com.dewarder.pickerkit.panel.PickerCategories;
@@ -37,7 +38,7 @@ public final class PanelPickerActivity extends AppCompatActivity implements OnAt
 
     }
 
-    public static void start(Activity activity, PanelPickerConfig config) {
+    public static void start(Activity activity, PickerPanelConfig config) {
         Intent intent = new Intent(activity, PanelPickerActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         intent.putExtra(EXTRA_CONFIG, config);
@@ -50,7 +51,7 @@ public final class PanelPickerActivity extends AppCompatActivity implements OnAt
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_picker_panel);
 
-        PanelPickerConfig config = Activities.getParcelableArgument(this, EXTRA_CONFIG);
+        PickerPanelConfig config = Activities.getParcelableArgument(this, EXTRA_CONFIG);
 
         mSlidingPanel = Activities.view(this, R.id.sliding_panel);
         mSlidingPanel.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
@@ -97,34 +98,6 @@ public final class PanelPickerActivity extends AppCompatActivity implements OnAt
 
     @Override
     public void onPanelPickerClicked(@IdRes int id) {
-/*        switch (id) {
-            case R.id.attachment_panel_category_gallery: {
-                new CategoryActivity.Builder(this)
-                        .setAccentColor(ContextCompat.getColor(this, R.color.colorAccent))
-                        .setRequestCode(PICKER_REQUEST_CODE)
-                        .setLimit(4)
-                        .start();
-                break;
-            }
-
-            case R.id.attachment_panel_category_hide: {
-                mSlidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
-                break;
-            }
-
-            case R.id.attachment_panel_category_send: {
-                Toast.makeText(this, Stream.of(mPickerPanel.getPicked())
-                        .map(File::getName)
-                        .toList()
-                        .toString(), Toast.LENGTH_LONG).show();
-
-                mPickerPanel.clearPicked();
-                mPickerPanel.replaceCategory(
-                        R.id.attachment_panel_category_send,
-                        PickerCategories.hide(this));
-                mSlidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
-                break;
-            }
-        }*/
+        PickerKit.getInstance().requestOpenPicker(this, id, PickerConfig.defaultInstance());
     }
 }

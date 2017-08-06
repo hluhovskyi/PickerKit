@@ -8,17 +8,17 @@ import com.dewarder.pickerkit.panel.PickerCategory;
 
 import java.util.List;
 
-public final class PanelPickerConfig implements Parcelable {
+public final class PickerPanelConfig implements Parcelable {
 
     private final ImmutablePoint startPoint;
     private final List<PickerCategory> categories;
 
-    PanelPickerConfig(PanelPickerBuilder builder) {
+    PickerPanelConfig(PanelPickerBuilder builder) {
         startPoint = builder.getStartPoint();
         categories = builder.getCategories();
     }
 
-    private PanelPickerConfig(Parcel in) {
+    private PickerPanelConfig(Parcel in) {
         startPoint = in.readParcelable(ImmutablePoint.class.getClassLoader());
         categories = in.createTypedArrayList(PickerCategory.CREATOR);
     }
@@ -42,15 +42,15 @@ public final class PanelPickerConfig implements Parcelable {
         dest.writeTypedList(categories);
     }
 
-    public static final Creator<PanelPickerConfig> CREATOR = new Creator<PanelPickerConfig>() {
+    public static final Creator<PickerPanelConfig> CREATOR = new Creator<PickerPanelConfig>() {
         @Override
-        public PanelPickerConfig createFromParcel(Parcel in) {
-            return new PanelPickerConfig(in);
+        public PickerPanelConfig createFromParcel(Parcel in) {
+            return new PickerPanelConfig(in);
         }
 
         @Override
-        public PanelPickerConfig[] newArray(int size) {
-            return new PanelPickerConfig[size];
+        public PickerPanelConfig[] newArray(int size) {
+            return new PickerPanelConfig[size];
         }
     };
 

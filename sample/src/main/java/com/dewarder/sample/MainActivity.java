@@ -13,7 +13,7 @@ import com.dewarder.pickerkit.CategoryActivity;
 import com.dewarder.pickerkit.FilePickerData;
 import com.dewarder.pickerkit.MediaStoreImagePickerDataProvider;
 import com.dewarder.pickerkit.PickerDataProvider;
-import com.dewarder.pickerkit.PickerKit;
+import com.dewarder.pickerkit.activity.PickerKit;
 import com.dewarder.pickerkit.Result;
 import com.dewarder.pickerkit.panel.AttachmentPanelView;
 import com.dewarder.pickerkit.panel.PickerCategories;
@@ -81,15 +81,15 @@ public class MainActivity extends AppCompatActivity {
             int pickedCount = mAttachmentPanel.getPicked().size();
             if (pickedCount == 0) {
                 mAttachmentPanel.replaceCategory(
-                        R.id.attachment_panel_category_send,
+                        R.id.picker_category_send,
                         PickerCategories.hide(this));
             } else if (pickedCount == 1 && checked) {
                 mAttachmentPanel.replaceCategory(
-                        R.id.attachment_panel_category_hide,
+                        R.id.picker_category_hide,
                         PickerCategories.send(this, pickedCount));
             } else {
                 mAttachmentPanel.replaceCategory(
-                        R.id.attachment_panel_category_send,
+                        R.id.picker_category_send,
                         PickerCategories.send(this, pickedCount));
             }
         });

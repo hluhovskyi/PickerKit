@@ -55,8 +55,8 @@ public final class PanelPickerBuilder {
         PanelPickerActivity.start(activity, createConfig());
     }
 
-    public PanelPickerConfig createConfig() {
-        return new PanelPickerConfig(this);
+    public PickerPanelConfig createConfig() {
+        return new PickerPanelConfig(this);
     }
 
     ImmutablePoint getStartPoint() {

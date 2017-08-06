@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.ColorInt;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -19,6 +20,8 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.annimon.stream.Stream;
+import com.dewarder.pickerkit.config.PickerConfig;
+import com.dewarder.pickerkit.utils.Recyclers;
 import com.github.rahatarmanahmed.cpv.CircularProgressView;
 
 import java.io.File;
@@ -62,6 +65,14 @@ public final class CategoryActivity extends AppCompatActivity implements
         return intent.getParcelableExtra(EXTRA_RESULT);
     }
 
+    public static void open(@NonNull Activity activity) {
+
+    }
+
+    public static void open(@NonNull Activity activity, @NonNull PickerConfig config) {
+
+    }
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         setTheme(R.style.PickerActivityTheme);
@@ -101,8 +112,8 @@ public final class CategoryActivity extends AppCompatActivity implements
 
         mCategoryRecycler = (RecyclerView) findViewById(R.id.category_recycler);
         mCategoryRecycler.post(() -> {
-            int spanCount = RecyclerUtils.calculateSpanCount(mCategoryRecycler, mCategoryItemMinSize);
-            int itemSize = RecyclerUtils.calculateItemSize(mCategoryRecycler, spanCount, mCategoryItemMinSize, mCategoryItemSpacing);
+            int spanCount = Recyclers.calculateSpanCount(mCategoryRecycler, mCategoryItemMinSize);
+            int itemSize = Recyclers.calculateItemSize(mCategoryRecycler, spanCount, mCategoryItemMinSize, mCategoryItemSpacing);
             mCategoryLayoutManager = new GridLayoutManager(this, spanCount);
             mCategoryRecycler.addItemDecoration(new GridSpacingItemDecoration(spanCount, mCategoryItemSpacing, true));
             mCategoryAdapter = new CategoryAdapter<>(new CategoryPreviewFetcher(this));

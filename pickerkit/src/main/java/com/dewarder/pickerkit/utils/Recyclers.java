@@ -1,10 +1,10 @@
-package com.dewarder.pickerkit;
+package com.dewarder.pickerkit.utils;
 
 import android.support.v7.widget.RecyclerView;
 
-public final class RecyclerUtils {
+public final class Recyclers {
 
-    private RecyclerUtils() {
+    private Recyclers() {
         throw new UnsupportedOperationException();
     }
 

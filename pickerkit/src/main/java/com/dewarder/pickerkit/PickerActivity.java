@@ -14,6 +14,7 @@ import android.view.MenuItem;
 
 import com.annimon.stream.Stream;
 import com.dewarder.pickerkit.utils.Activities;
+import com.dewarder.pickerkit.utils.Recyclers;
 
 import java.io.File;
 import java.io.Serializable;
@@ -96,8 +97,8 @@ public final class PickerActivity extends AppCompatActivity implements
 
         mPickerRecycler = (RecyclerView) findViewById(R.id.picker_recycler);
         mPickerRecycler.post(() -> {
-            int spanCount = RecyclerUtils.calculateSpanCount(mPickerRecycler, mItemMinSize);
-            int itemSize = RecyclerUtils.calculateItemSize(mPickerRecycler, spanCount, mItemMinSize, mItemSpacing);
+            int spanCount = Recyclers.calculateSpanCount(mPickerRecycler, mItemMinSize);
+            int itemSize = Recyclers.calculateItemSize(mPickerRecycler, spanCount, mItemMinSize, mItemSpacing);
             mPickerLayoutManager = new GridLayoutManager(this, spanCount);
             mPickerRecycler.addItemDecoration(new GridSpacingItemDecoration(spanCount, mItemSpacing, true));
             mPickerAdapter = new PickerItemAdapter.Builder<FilePickerData>()
