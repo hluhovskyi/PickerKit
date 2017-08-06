@@ -1,6 +1,11 @@
 package com.dewarder.pickerkit.utils;
 
+import android.content.Context;
 import android.support.annotation.ColorInt;
+import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
+
+import com.dewarder.pickerkit.R;
 
 public final class Colors {
 
@@ -21,6 +26,10 @@ public final class Colors {
         return DEFAULT_COLOR;
     }
 
+    @ColorInt
+    public static int accentColor(Context context) {
+        return ContextCompat.getColor(context, R.color.colorAccent);
+    }
 
     public static boolean isPresent(@ColorInt int color) {
         return color != NO_COLOR;
@@ -30,7 +39,18 @@ public final class Colors {
         return color == DEFAULT_COLOR;
     }
 
-    public static boolean isPresentOrDefault(@ColorInt int color) {
-        return isPresent(color) || isDefault(color);
+    public static boolean isAbsentOrDefault(@ColorInt int color) {
+        return !isPresent(color) || isDefault(color);
+    }
+
+    @ColorInt
+    public static int orElse(@ColorInt int color, @ColorInt int elseColor) {
+        return isAbsentOrDefault(color) ? elseColor : color;
+    }
+
+    @ColorInt
+    public static int orElseAccent(@NonNull Context context, @ColorInt int color) {
+        Objects.requireNonNull(context);
+        return orElse(color, accentColor(context));
     }
 }

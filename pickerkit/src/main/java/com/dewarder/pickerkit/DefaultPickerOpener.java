@@ -28,10 +28,12 @@ public final class DefaultPickerOpener implements PickerOpener {
     }
 
     @Override
-    public void open(@NonNull Activity activity, @IdRes int pickerId, @NonNull PickerConfig config) {
+    public int open(@NonNull Activity activity, @IdRes int pickerId, @NonNull PickerConfig config) {
         Objects.requireNonNull(activity, config);
         if (pickerId == id) {
-            action.open(activity, config);
+            return action.open(activity, config);
         }
+
+        throw new IllegalStateException("Picker with id " + id + " isn't supported");
     }
 }

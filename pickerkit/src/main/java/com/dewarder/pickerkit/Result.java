@@ -18,7 +18,7 @@ public final class Result implements Parcelable {
         mPicked = in.createTypedArrayList(Uri.CREATOR);
     }
 
-    static Result from(List<Uri> mPicked) {
+    public static Result from(List<Uri> mPicked) {
         return new Result(mPicked);
     }
 

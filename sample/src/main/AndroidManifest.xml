@@ -21,7 +21,7 @@
 
         </activity>
 
-        <activity android:name="com.dewarder.pickerkit.PickerActivity"/>
+        <activity android:name="com.dewarder.pickerkit.activity.PickerGalleryActivity"/>
 
         <activity
             android:name="com.dewarder.pickerkit.activity.PanelPickerActivity"

@@ -7,5 +7,5 @@ import com.dewarder.pickerkit.config.PickerConfig;
 
 public interface PickerOpenerAction {
 
-    void open(@NonNull Activity activity, @NonNull PickerConfig config);
+    int open(@NonNull Activity activity, @NonNull PickerConfig config);
 }

@@ -10,5 +10,5 @@ public interface PickerOpener {
 
     boolean canOpen(@NonNull Activity activity, @IdRes int pickerId);
 
-    void open(@NonNull Activity activity, @IdRes int pickerId, @NonNull PickerConfig config);
+    int open(@NonNull Activity activity, @IdRes int pickerId, @NonNull PickerConfig config);
 }

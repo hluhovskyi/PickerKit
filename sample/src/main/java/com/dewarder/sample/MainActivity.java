@@ -9,7 +9,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.annimon.stream.Stream;
-import com.dewarder.pickerkit.CategoryActivity;
+import com.dewarder.pickerkit.activity.PickerGalleryFolderActivity;
 import com.dewarder.pickerkit.FilePickerData;
 import com.dewarder.pickerkit.MediaStoreImagePickerDataProvider;
 import com.dewarder.pickerkit.PickerDataProvider;
@@ -137,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (resultCode == RESULT_OK) {
-            Result result = CategoryActivity.getResult(data);
+            Result result = PickerGalleryFolderActivity.getResult(data);
             Toast.makeText(this, Stream.of(result.getPicked()).toList().toString(), Toast.LENGTH_LONG).show();
         } else {
             Toast.makeText(this, "Picker canceled", Toast.LENGTH_LONG).show();

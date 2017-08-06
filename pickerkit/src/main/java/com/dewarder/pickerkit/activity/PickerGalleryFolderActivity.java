@@ -1,13 +1,11 @@
-package com.dewarder.pickerkit;
+package com.dewarder.pickerkit.activity;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ContextThemeWrapper;
 import android.support.v7.widget.GridLayoutManager;
@@ -20,7 +18,23 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.annimon.stream.Stream;
+import com.dewarder.pickerkit.CategoryAdapter;
+import com.dewarder.pickerkit.CategoryPreviewFetcher;
+import com.dewarder.pickerkit.FileCategoryData;
+import com.dewarder.pickerkit.GridSpacingItemDecoration;
+import com.dewarder.pickerkit.MediaStoreImagePickerDataProvider;
+import com.dewarder.pickerkit.MediaStoreVideoPickerDataProvider;
+import com.dewarder.pickerkit.OnCategoryClickListener;
+import com.dewarder.pickerkit.PickerDataProvider;
+import com.dewarder.pickerkit.PickerPanelView;
+import com.dewarder.pickerkit.R;
+import com.dewarder.pickerkit.RequestCodeGenerator;
+import com.dewarder.pickerkit.Result;
 import com.dewarder.pickerkit.config.PickerConfig;
+import com.dewarder.pickerkit.config.PickerDataConfig;
+import com.dewarder.pickerkit.config.PickerUIConfig;
+import com.dewarder.pickerkit.utils.Activities;
+import com.dewarder.pickerkit.utils.Colors;
 import com.dewarder.pickerkit.utils.Recyclers;
 import com.github.rahatarmanahmed.cpv.CircularProgressView;
 
@@ -29,17 +43,18 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public final class CategoryActivity extends AppCompatActivity implements
+public final class PickerGalleryFolderActivity extends AppCompatActivity implements
         OnCategoryClickListener<FileCategoryData>,
         PickerPanelView.OnSubmitClickListener,
         PickerPanelView.OnCancelClickListener,
         PickerPanelView.OnCounterClickListener {
 
-    private static final String EXTRA_ACCENT_COLOR = "EXTRA_ACCENT_COLOR";
     private static final String EXTRA_RESULT = "EXTRA_RESULT";
-    private static final String EXTRA_LIMIT = "EXTRA_LIMIT";
+    private static final String EXTRA_CONFIG = "EXTRA_CONFIG";
 
     private static final int IMAGE_PICKER_ACTIVITY_REQUEST_CODE = 1;
+
+    private PickerConfig config;
 
     private PickerDataProvider<File> mImageDataProvider;
     private PickerDataProvider<File> mVideoDataProvider;
@@ -55,7 +70,6 @@ public final class CategoryActivity extends AppCompatActivity implements
     private CategoryAdapter<FileCategoryData> mCategoryAdapter;
 
     private int mAccentColor;
-    private int mLimit;
     private int mCategoryItemMinSize;
     private int mCategoryItemSpacing;
 
@@ -69,8 +83,12 @@ public final class CategoryActivity extends AppCompatActivity implements
 
     }
 
-    public static void open(@NonNull Activity activity, @NonNull PickerConfig config) {
-
+    public static int open(@NonNull Activity activity, @NonNull PickerConfig config) {
+        int requestCode = RequestCodeGenerator.generate();
+        Intent intent = new Intent(activity, PickerGalleryFolderActivity.class);
+        intent.putExtra(EXTRA_CONFIG, config);
+        activity.startActivityForResult(intent, requestCode);
+        return requestCode;
     }
 
     @Override
@@ -79,10 +97,9 @@ public final class CategoryActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_category);
 
-        Bundle extras = getIntent().getExtras();
-        int accentColor = extras.getInt(EXTRA_ACCENT_COLOR);
-        mAccentColor = accentColor == -1 ? ContextCompat.getColor(this, R.color.colorAccent) : accentColor;
-        mLimit = extras.getInt(EXTRA_LIMIT, -1);
+        config = Activities.getParcelableArgument(this, EXTRA_CONFIG);
+        PickerUIConfig uiConfig = config.getUiConfig();
+        mAccentColor = Colors.orElseAccent(this, uiConfig.getAccentColor());
 
         mCategoryItemMinSize = getResources().getDimensionPixelSize(R.dimen.item_category_min_size);
         mCategoryItemSpacing = getResources().getDimensionPixelSize(R.dimen.spacing_default);
@@ -166,14 +183,14 @@ public final class CategoryActivity extends AppCompatActivity implements
                 .filter(f -> category.getData().contains(f))
                 .toList();
 
-        new PickerActivity.Builder(this)
+        new PickerGalleryActivity.Builder(this)
                 .setRequestCode(IMAGE_PICKER_ACTIVITY_REQUEST_CODE)
                 .setName(category.getName())
                 .setAccentColor(mAccentColor)
                 .setData(category.getData())
                 .setPicked(pickedPart)
                 .setTotalPicked(mPickedData.size())
-                .setLimit(mLimit)
+                .setLimit(config.getDataConfig().getGalleryLimit())
                 .start();
     }
 
@@ -196,7 +213,7 @@ public final class CategoryActivity extends AppCompatActivity implements
         }
 
         if (requestCode == IMAGE_PICKER_ACTIVITY_REQUEST_CODE) {
-            PickerActivity.Result result = PickerActivity.getResult(data);
+            PickerGalleryActivity.Result result = PickerGalleryActivity.getResult(data);
             if (result.isCanceled()) {
                 finish();
                 return;
@@ -244,14 +261,14 @@ public final class CategoryActivity extends AppCompatActivity implements
 
     @Override
     public void onCounterClicked() {
-        new PickerActivity.Builder(this)
+        new PickerGalleryActivity.Builder(this)
                 .setRequestCode(IMAGE_PICKER_ACTIVITY_REQUEST_CODE)
                 .setName(getString(R.string.label_picked))
                 .setAccentColor(mAccentColor)
                 .setData(mPickedData)
                 .setPicked(mPickedData)
                 .setTotalPicked(mPickedData.size())
-                .setLimit(mLimit)
+                .setLimit(config.getDataConfig().getGalleryLimit())
                 .start();
     }
 
@@ -266,42 +283,5 @@ public final class CategoryActivity extends AppCompatActivity implements
     private void cancel() {
         setResult(RESULT_CANCELED);
         finish();
-    }
-
-    public static final class Builder {
-
-        private final Activity mActivity;
-        private int mRequestCode = -1;
-        private int mAccentColor = -1;
-        private int mLimit = -1;
-
-        public Builder(Activity activity) {
-            mActivity = activity;
-        }
-
-        public Builder setRequestCode(int requestCode) {
-            mRequestCode = requestCode;
-            return this;
-        }
-
-        public Builder setAccentColor(@ColorInt int color) {
-            mAccentColor = color;
-            return this;
-        }
-
-        public Builder setLimit(int limit) {
-            mLimit = limit;
-            return this;
-        }
-
-        public void start() {
-            Intent intent = new Intent();
-            intent.setClassName("com.dewarder.pickerkit", "CategoryActivity");
-            intent.putExtra(EXTRA_ACCENT_COLOR, mAccentColor);
-            intent.putExtra(EXTRA_LIMIT, mLimit);
-
-            int requestCode = mRequestCode == -1 ? RequestCodeGenerator.generate() : mRequestCode;
-            mActivity.startActivityForResult(intent, requestCode);
-        }
     }
 }

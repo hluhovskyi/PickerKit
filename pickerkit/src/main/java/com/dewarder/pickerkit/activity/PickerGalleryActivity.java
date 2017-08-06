@@ -1,4 +1,4 @@
-package com.dewarder.pickerkit;
+package com.dewarder.pickerkit.activity;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -13,6 +13,14 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 import com.annimon.stream.Stream;
+import com.dewarder.pickerkit.FilePickerData;
+import com.dewarder.pickerkit.FilePickerDataPreviewFetcher;
+import com.dewarder.pickerkit.GridSpacingItemDecoration;
+import com.dewarder.pickerkit.PickerItemAdapter;
+import com.dewarder.pickerkit.PickerPanelView;
+import com.dewarder.pickerkit.PreviewFetcher;
+import com.dewarder.pickerkit.R;
+import com.dewarder.pickerkit.RequestCodeGenerator;
 import com.dewarder.pickerkit.utils.Activities;
 import com.dewarder.pickerkit.utils.Recyclers;
 
@@ -25,7 +33,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public final class PickerActivity extends AppCompatActivity implements
+public final class PickerGalleryActivity extends AppCompatActivity implements
         PickerPanelView.OnSubmitClickListener,
         PickerPanelView.OnCancelClickListener,
         PickerItemAdapter.DataController<FilePickerData>,
@@ -290,7 +298,7 @@ public final class PickerActivity extends AppCompatActivity implements
         }
 
         public void start() {
-            Intent intent = new Intent(mActivity, PickerActivity.class);
+            Intent intent = new Intent(mActivity, PickerGalleryActivity.class);
             intent.putExtra(EXTRA_NAME, mName);
             intent.putExtra(EXTRA_ACCENT_COLOR, mAccentColor);
             intent.putExtra(EXTRA_DATA, mData != null ? mData : new ArrayList<File>());

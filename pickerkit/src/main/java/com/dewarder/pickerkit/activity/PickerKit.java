@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 
-import com.dewarder.pickerkit.CategoryActivity;
 import com.dewarder.pickerkit.DefaultPickerOpener;
 import com.dewarder.pickerkit.PickerOpener;
 import com.dewarder.pickerkit.R;
@@ -31,7 +30,7 @@ public final class PickerKit {
     private final List<PickerOpener> customOpeners = new CopyOnWriteArrayList<>();
 
     {
-        defaultOpeners.add(DefaultPickerOpener.of(R.id.picker_category_gallery, CategoryActivity::open));
+        defaultOpeners.add(DefaultPickerOpener.of(R.id.picker_category_gallery, PickerGalleryFolderActivity::open));
     }
 
     private PickerKit() {
