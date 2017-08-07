@@ -9,8 +9,10 @@ import com.dewarder.pickerkit.PickerOpener;
 import com.dewarder.pickerkit.R;
 import com.dewarder.pickerkit.config.PanelPickerBuilder;
 import com.dewarder.pickerkit.config.PickerConfig;
+import com.dewarder.pickerkit.result.OnPickerGalleryResultListener;
 import com.dewarder.pickerkit.result.OnPickerImageResultListener;
 import com.dewarder.pickerkit.result.OnPickerVideoResultListener;
+import com.dewarder.pickerkit.result.PickerGalleryResult;
 import com.dewarder.pickerkit.utils.Lists;
 import com.dewarder.pickerkit.utils.Objects;
 
@@ -23,6 +25,7 @@ public final class PickerKit {
 
     static PickerKit instance;
 
+    private final List<WeakReference<OnPickerGalleryResultListener>> galleryListeners = new CopyOnWriteArrayList<>();
     private final List<WeakReference<OnPickerImageResultListener>> imageListeners = new CopyOnWriteArrayList<>();
     private final List<WeakReference<OnPickerVideoResultListener>> videoListeners = new CopyOnWriteArrayList<>();
 
@@ -30,7 +33,7 @@ public final class PickerKit {
     private final List<PickerOpener> customOpeners = new CopyOnWriteArrayList<>();
 
     {
-        defaultOpeners.add(DefaultPickerOpener.of(R.id.picker_category_gallery, PickerGalleryFolderActivity::open));
+        defaultOpeners.add(DefaultPickerOpener.of(R.id.picker_category_gallery, PickerGalleryFolderActivity::openForResult));
     }
 
     private PickerKit() {
@@ -50,6 +53,16 @@ public final class PickerKit {
 
     public static PanelPickerBuilder buildPanelPicker() {
         return new PanelPickerBuilder();
+    }
+
+    public void addOnPickerGalleryResultListener(@NonNull OnPickerGalleryResultListener listener) {
+        Objects.requireNonNull(listener);
+        Lists.addWeekReference(galleryListeners, listener);
+    }
+
+    public void removeOnPickerGalleryResultListener(@NonNull OnPickerGalleryResultListener listener) {
+        Objects.requireNonNull(listener);
+        Lists.removeWeekReference(galleryListeners, listener);
     }
 
     public void addOnPickerImageResultListener(@NonNull OnPickerImageResultListener listener) {
@@ -98,5 +111,9 @@ public final class PickerKit {
         }
 
         throw new IllegalStateException("Unsupported picker id " + id + ". Add custom opener or use predefined ids");
+    }
+
+    void notifyGallerySelected(@NonNull PickerGalleryResult result) {
+        Lists.forEach(galleryListeners, listener -> listener.onPickerGalleryResult(result));
     }
 }

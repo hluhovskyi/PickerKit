@@ -31,7 +31,6 @@ import com.dewarder.pickerkit.R;
 import com.dewarder.pickerkit.RequestCodeGenerator;
 import com.dewarder.pickerkit.Result;
 import com.dewarder.pickerkit.config.PickerConfig;
-import com.dewarder.pickerkit.config.PickerDataConfig;
 import com.dewarder.pickerkit.config.PickerUIConfig;
 import com.dewarder.pickerkit.utils.Activities;
 import com.dewarder.pickerkit.utils.Colors;
@@ -80,10 +79,20 @@ public final class PickerGalleryFolderActivity extends AppCompatActivity impleme
     }
 
     public static void open(@NonNull Activity activity) {
-
+        open(activity, PickerConfig.defaultInstance());
     }
 
-    public static int open(@NonNull Activity activity, @NonNull PickerConfig config) {
+    public static void open(@NonNull Activity activity, @NonNull PickerConfig config) {
+        Intent intent = new Intent(activity, PickerGalleryFolderActivity.class);
+        intent.putExtra(EXTRA_CONFIG, config);
+        activity.startActivity(intent);
+    }
+
+    public static int openForResult(@NonNull Activity activity) {
+        return openForResult(activity, PickerConfig.defaultInstance());
+    }
+
+    public static int openForResult(@NonNull Activity activity, @NonNull PickerConfig config) {
         int requestCode = RequestCodeGenerator.generate();
         Intent intent = new Intent(activity, PickerGalleryFolderActivity.class);
         intent.putExtra(EXTRA_CONFIG, config);

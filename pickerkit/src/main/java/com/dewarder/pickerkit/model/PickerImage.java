@@ -9,26 +9,26 @@ import com.dewarder.pickerkit.utils.Objects;
 
 import java.io.File;
 
-public final class PickerPhoto implements Parcelable {
+public final class PickerImage implements Parcelable {
 
     private final Uri source;
 
-    private PickerPhoto(Uri source) {
+    private PickerImage(Uri source) {
         this.source = source;
     }
 
-    private PickerPhoto(Parcel in) {
+    private PickerImage(Parcel in) {
         source = in.readParcelable(Uri.class.getClassLoader());
     }
 
-    public static PickerPhoto fromUri(@NonNull Uri uri) {
+    public static PickerImage fromUri(@NonNull Uri uri) {
         Objects.requireNonNull(uri);
-        return new PickerPhoto(uri);
+        return new PickerImage(uri);
     }
 
-    public static PickerPhoto fromFile(@NonNull File file) {
+    public static PickerImage fromFile(@NonNull File file) {
         Objects.requireNonNull(file);
-        return new PickerPhoto(Uri.fromFile(file));
+        return new PickerImage(Uri.fromFile(file));
     }
 
     @NonNull
@@ -46,15 +46,15 @@ public final class PickerPhoto implements Parcelable {
         dest.writeParcelable(source, flags);
     }
 
-    public static final Creator<PickerPhoto> CREATOR = new Creator<PickerPhoto>() {
+    public static final Creator<PickerImage> CREATOR = new Creator<PickerImage>() {
         @Override
-        public PickerPhoto createFromParcel(Parcel in) {
-            return new PickerPhoto(in);
+        public PickerImage createFromParcel(Parcel in) {
+            return new PickerImage(in);
         }
 
         @Override
-        public PickerPhoto[] newArray(int size) {
-            return new PickerPhoto[size];
+        public PickerImage[] newArray(int size) {
+            return new PickerImage[size];
         }
     };
 }

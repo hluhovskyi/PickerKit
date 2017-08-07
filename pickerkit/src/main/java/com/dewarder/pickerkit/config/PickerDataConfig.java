@@ -8,28 +8,28 @@ public final class PickerDataConfig implements Parcelable {
 
     private static final PickerDataConfig DEFAULT_INSTANCE;
 
-    private final PickerDataPhotoConfig photoConfig;
+    private final PickerDataImageConfig imageConfig;
     private final PickerDataVideoConfig videoConfig;
     private final int galleryLimit;
 
     static {
         DEFAULT_INSTANCE = new PickerDataConfig(
-                PickerDataPhotoConfig.defaultInstance(),
+                PickerDataImageConfig.defaultInstance(),
                 PickerDataVideoConfig.defaultInstance(),
                 Integer.MAX_VALUE);
     }
 
-    private PickerDataConfig(PickerDataPhotoConfig photoConfig,
+    private PickerDataConfig(PickerDataImageConfig imageConfig,
                              PickerDataVideoConfig videoConfig,
                              int galleryLimit) {
 
-        this.photoConfig = photoConfig;
+        this.imageConfig = imageConfig;
         this.videoConfig = videoConfig;
         this.galleryLimit = galleryLimit;
     }
 
     private PickerDataConfig(Parcel in) {
-        photoConfig = in.readParcelable(PickerDataPhotoConfig.class.getClassLoader());
+        imageConfig = in.readParcelable(PickerDataImageConfig.class.getClassLoader());
         videoConfig = in.readParcelable(PickerDataVideoConfig.class.getClassLoader());
         galleryLimit = in.readInt();
     }
@@ -39,8 +39,8 @@ public final class PickerDataConfig implements Parcelable {
     }
 
     @NonNull
-    public PickerDataPhotoConfig getPhotoConfig() {
-        return photoConfig;
+    public PickerDataImageConfig getImageConfig() {
+        return imageConfig;
     }
 
     @NonNull
@@ -59,7 +59,7 @@ public final class PickerDataConfig implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeParcelable(photoConfig, flags);
+        dest.writeParcelable(imageConfig, flags);
         dest.writeParcelable(videoConfig, flags);
         dest.writeInt(galleryLimit);
     }

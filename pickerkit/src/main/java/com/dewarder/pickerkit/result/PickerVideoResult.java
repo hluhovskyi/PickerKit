@@ -1,10 +1,10 @@
 package com.dewarder.pickerkit.result;
 
-import android.net.Uri;
+import com.dewarder.pickerkit.model.PickerVideo;
 
 import java.util.List;
 
 public interface PickerVideoResult {
 
-    List<Uri> getVideos();
+    List<PickerVideo> getVideos();
 }

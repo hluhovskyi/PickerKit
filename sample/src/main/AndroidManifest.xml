@@ -21,6 +21,8 @@
 
         </activity>
 
+        <activity android:name="com.dewarder.pickerkit.activity.PickerGalleryFolderActivity"/>
+
         <activity android:name="com.dewarder.pickerkit.activity.PickerGalleryActivity"/>
 
         <activity

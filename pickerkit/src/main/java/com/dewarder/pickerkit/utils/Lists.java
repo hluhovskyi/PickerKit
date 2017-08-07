@@ -1,5 +1,10 @@
 package com.dewarder.pickerkit.utils;
 
+import android.support.annotation.NonNull;
+
+import com.annimon.stream.Stream;
+import com.annimon.stream.function.Consumer;
+
 import java.lang.ref.WeakReference;
 import java.util.Iterator;
 import java.util.List;
@@ -21,5 +26,12 @@ public final class Lists {
                 iterator.remove();
             }
         }
+    }
+
+    public static <T> void forEach(List<WeakReference<T>> list, @NonNull Consumer<T> consumer) {
+        Stream.of(list)
+                .map(WeakReference::get)
+                .filter(value -> value != null)
+                .forEach(consumer);
     }
 }
