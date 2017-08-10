@@ -1,27 +1,17 @@
 package com.dewarder.sample;
 
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.Toast;
 
-import com.annimon.stream.Stream;
-import com.dewarder.pickerkit.activity.PickerGalleryFolderActivity;
-import com.dewarder.pickerkit.FilePickerData;
 import com.dewarder.pickerkit.MediaStoreImagePickerDataProvider;
-import com.dewarder.pickerkit.PickerDataProvider;
 import com.dewarder.pickerkit.activity.PickerKit;
-import com.dewarder.pickerkit.Result;
-import com.dewarder.pickerkit.panel.AttachmentPanelView;
+import com.dewarder.pickerkit.config.PanelPickerBuilder;
 import com.dewarder.pickerkit.panel.PickerCategories;
+import com.dewarder.pickerkit.panel.PickerPanelView;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
-
-import java.io.File;
-import java.util.Collection;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -31,12 +21,18 @@ public class MainActivity extends AppCompatActivity {
     private MediaStoreImagePickerDataProvider mPickerDataProvider;
 
     private SlidingUpPanelLayout mSlidingPanel;
-    private AttachmentPanelView mAttachmentPanel;
+    private PickerPanelView mAttachmentPanel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        new PanelPickerBuilder()
+                .addPickerCategories(PickerCategories.all(this))
+                .setStartPoint(mAttachmentPanel)
+
+                .build();
 
         mPickerDataProvider = new MediaStoreImagePickerDataProvider(this);
 
@@ -66,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
                     .start(this);
         });
 
-        mAttachmentPanel = (AttachmentPanelView) findViewById(R.id.attachment_panel);
+        mAttachmentPanel = (PickerPanelView) findViewById(R.id.attachment_panel);
         mAttachmentPanel.addCategories(
                 PickerCategories.camera(this),
                 PickerCategories.gallery(this),
@@ -101,46 +97,5 @@ public class MainActivity extends AppCompatActivity {
         mAttachmentPanel.setOnAttachmentPanelCategoryClickListener(id -> {
 
         });
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == PERMISSION_REQUEST_CODE) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                mPickerDataProvider.request(new PickerDataProvider.Callback<File>() {
-                    @Override
-                    public void onNext(Collection<File> data) {
-                        List<FilePickerData> pickerData = Stream.of(data).map(FilePickerData::from).toList();
-                        mAttachmentPanel.post(() -> mAttachmentPanel.setData(pickerData));
-                    }
-
-                    @Override
-                    public void onComplete() {
-                        mSlidingPanel.post(() -> mSlidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED));
-                    }
-
-                    @Override
-                    public void onError(Throwable throwable) {
-
-                    }
-                });
-            }
-        }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode != PICKER_REQUEST_CODE) {
-            return;
-        }
-
-        if (resultCode == RESULT_OK) {
-            Result result = PickerGalleryFolderActivity.getResult(data);
-            Toast.makeText(this, Stream.of(result.getPicked()).toList().toString(), Toast.LENGTH_LONG).show();
-        } else {
-            Toast.makeText(this, "Picker canceled", Toast.LENGTH_LONG).show();
-        }
     }
 }

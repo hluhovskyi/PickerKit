@@ -23,7 +23,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public final class PickerKit {
 
-    static PickerKit instance;
+    volatile static PickerKit instance;
 
     private final List<WeakReference<OnPickerGalleryResultListener>> galleryListeners = new CopyOnWriteArrayList<>();
     private final List<WeakReference<OnPickerImageResultListener>> imageListeners = new CopyOnWriteArrayList<>();
@@ -31,6 +31,8 @@ public final class PickerKit {
 
     private final List<PickerOpener> defaultOpeners = new ArrayList<>();
     private final List<PickerOpener> customOpeners = new CopyOnWriteArrayList<>();
+
+    private volatile boolean notifyOnCancel = false;
 
     {
         defaultOpeners.add(DefaultPickerOpener.of(R.id.picker_category_gallery, PickerGalleryFolderActivity::openForResult));
@@ -95,6 +97,10 @@ public final class PickerKit {
         customOpeners.remove(opener);
     }
 
+    public void setNotifyOnCancel(boolean shouldNotify) {
+        notifyOnCancel = shouldNotify;
+    }
+
     void requestOpenPicker(@NonNull Activity activity, @IdRes int id, @NonNull PickerConfig config) {
         for (PickerOpener opener : customOpeners) {
             if (opener.canOpen(activity, id)) {
@@ -114,6 +120,8 @@ public final class PickerKit {
     }
 
     void notifyGallerySelected(@NonNull PickerGalleryResult result) {
-        Lists.forEach(galleryListeners, listener -> listener.onPickerGalleryResult(result));
+        if (result.isSubmitted() || (notifyOnCancel && result.isCanceled())) {
+            Lists.forEach(galleryListeners, listener -> listener.onPickerGalleryResult(result));
+        }
     }
 }

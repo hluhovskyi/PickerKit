@@ -2,43 +2,36 @@ package com.dewarder.pickerkit.config;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.NonNull;
+import android.support.annotation.ColorInt;
+
+import com.dewarder.pickerkit.utils.Colors;
 
 public final class PickerConfig implements Parcelable {
 
     private static final PickerConfig DEFAULT_INSTANCE;
 
-    private final PickerUIConfig uiConfig;
-    private final PickerDataConfig dataConfig;
+    private final int accentColor;
 
     static {
         DEFAULT_INSTANCE = new PickerConfig(
-                PickerUIConfig.defaultInstance(),
-                PickerDataConfig.defaultInstance());
+                Colors.defaultColor());
     }
 
-    private PickerConfig(PickerUIConfig uiConfig, PickerDataConfig dataConfig) {
-        this.uiConfig = uiConfig;
-        this.dataConfig = dataConfig;
+    PickerConfig(int accentColor) {
+        this.accentColor = accentColor;
     }
 
     private PickerConfig(Parcel in) {
-        uiConfig = in.readParcelable(PickerUIConfig.class.getClassLoader());
-        dataConfig = in.readParcelable(PickerDataConfig.class.getClassLoader());
+        accentColor = in.readInt();
     }
 
     public static PickerConfig defaultInstance() {
         return DEFAULT_INSTANCE;
     }
 
-    @NonNull
-    public PickerUIConfig getUiConfig() {
-        return uiConfig;
-    }
-
-    @NonNull
-    public PickerDataConfig getDataConfig() {
-        return dataConfig;
+    @ColorInt
+    public int getAccentColor() {
+        return accentColor;
     }
 
     @Override
@@ -48,8 +41,7 @@ public final class PickerConfig implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeParcelable(uiConfig, flags);
-        dest.writeParcelable(dataConfig, flags);
+        dest.writeInt(accentColor);
     }
 
     public static final Creator<PickerConfig> CREATOR = new Creator<PickerConfig>() {

@@ -5,21 +5,23 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.dewarder.pickerkit.model.PickerMediaFolder;
+
 import java.util.ArrayList;
 import java.util.Collection;
 
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
-public class CategoryAdapter<T extends CategoryData<?, ?>> extends RecyclerView.Adapter<CategoryViewHolder> {
+public class CategoryAdapter extends RecyclerView.Adapter<CategoryViewHolder> {
 
-    private final PreviewFetcher<T> mPreviewFetcher;
-    private final ArrayList<T> mCategories = new ArrayList<>();
+    private final PreviewFetcher<PickerMediaFolder> mPreviewFetcher;
+    private final ArrayList<PickerMediaFolder> mCategories = new ArrayList<>();
 
     private int mCategoryItemSize = WRAP_CONTENT;
     private PreviewFetcher.Params mPreviewParams = PreviewFetcher.Params.empty();
-    private OnCategoryClickListener<T> mOnCategoryClickListener;
+    private OnCategoryClickListener<PickerMediaFolder> mOnCategoryClickListener;
 
-    public CategoryAdapter(PreviewFetcher<T> previewFetcher) {
+    public CategoryAdapter(PreviewFetcher<PickerMediaFolder> previewFetcher) {
         mPreviewFetcher = previewFetcher;
     }
 
@@ -35,11 +37,11 @@ public class CategoryAdapter<T extends CategoryData<?, ?>> extends RecyclerView.
 
     @Override
     public void onBindViewHolder(CategoryViewHolder holder, int position) {
-        T data = mCategories.get(position);
-        holder.setName(data.getName());
-        holder.setItemCount(data.getItemCount());
-        holder.itemView.setOnClickListener(v -> notifyCategoryClicked(data));
-        mPreviewFetcher.fetchPreview(data, mPreviewParams, holder.getPreviewTarget());
+        PickerMediaFolder folder = mCategories.get(position);
+        holder.setName(folder.getName());
+        holder.setItemCount(folder.getItemCount());
+        holder.itemView.setOnClickListener(v -> notifyCategoryClicked(folder));
+        mPreviewFetcher.fetchPreview(folder, mPreviewParams, holder.getPreviewTarget());
     }
 
     @Override
@@ -58,17 +60,17 @@ public class CategoryAdapter<T extends CategoryData<?, ?>> extends RecyclerView.
         notifyDataSetChanged();
     }
 
-    public void appendCategories(Collection<T> categories) {
+    public void appendCategories(Collection<PickerMediaFolder> categories) {
         int previousSize = mCategories.size();
         mCategories.addAll(categories);
         notifyItemRangeInserted(previousSize, categories.size());
     }
 
-    public void setOnCategoryClickListener(OnCategoryClickListener<T> listener) {
+    public void setOnCategoryClickListener(OnCategoryClickListener<PickerMediaFolder> listener) {
         mOnCategoryClickListener = listener;
     }
 
-    private void notifyCategoryClicked(T category) {
+    private void notifyCategoryClicked(PickerMediaFolder category) {
         if (mOnCategoryClickListener != null) {
             mOnCategoryClickListener.onCategoryClicked(category);
         }

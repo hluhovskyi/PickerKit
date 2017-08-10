@@ -2,66 +2,74 @@ package com.dewarder.pickerkit.config;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
+
+import com.dewarder.pickerkit.model.PickerImage;
+import com.dewarder.pickerkit.model.PickerVideo;
+
+import java.util.Collections;
+import java.util.List;
 
 public final class PickerDataConfig implements Parcelable {
 
     private static final PickerDataConfig DEFAULT_INSTANCE;
 
-    private final PickerDataImageConfig imageConfig;
-    private final PickerDataVideoConfig videoConfig;
     private final int galleryLimit;
+    private final List<PickerImage> selectedImages;
+    private final List<PickerVideo> selectedVideos;
 
     static {
         DEFAULT_INSTANCE = new PickerDataConfig(
-                PickerDataImageConfig.defaultInstance(),
-                PickerDataVideoConfig.defaultInstance(),
-                Integer.MAX_VALUE);
+                Integer.MAX_VALUE,
+                Collections.emptyList(),
+                Collections.emptyList());
     }
 
-    private PickerDataConfig(PickerDataImageConfig imageConfig,
-                             PickerDataVideoConfig videoConfig,
-                             int galleryLimit) {
+    PickerDataConfig(int galleryLimit,
+                     List<PickerImage> selectedImages,
+                     List<PickerVideo> selectedVideos) {
 
-        this.imageConfig = imageConfig;
-        this.videoConfig = videoConfig;
         this.galleryLimit = galleryLimit;
+        this.selectedImages = selectedImages;
+        this.selectedVideos = selectedVideos;
     }
 
     private PickerDataConfig(Parcel in) {
-        imageConfig = in.readParcelable(PickerDataImageConfig.class.getClassLoader());
-        videoConfig = in.readParcelable(PickerDataVideoConfig.class.getClassLoader());
         galleryLimit = in.readInt();
+        selectedImages = in.createTypedArrayList(PickerImage.CREATOR);
+        selectedVideos = in.createTypedArrayList(PickerVideo.CREATOR);
     }
 
     public static PickerDataConfig defaultInstance() {
         return DEFAULT_INSTANCE;
     }
 
-    @NonNull
-    public PickerDataImageConfig getImageConfig() {
-        return imageConfig;
-    }
-
-    @NonNull
-    public PickerDataVideoConfig getVideoConfig() {
-        return videoConfig;
-    }
-
+    @IntRange(from = 0, to = Integer.MAX_VALUE)
     public int getGalleryLimit() {
         return galleryLimit;
+    }
+
+    @NonNull
+    public List<PickerImage> getSelectedImages() {
+        return selectedImages;
+    }
+
+    @NonNull
+    public List<PickerVideo> getSelectedVideos() {
+        return selectedVideos;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(galleryLimit);
+        dest.writeTypedList(selectedImages);
+        dest.writeTypedList(selectedVideos);
     }
 
     @Override
     public int describeContents() {
         return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeParcelable(imageConfig, flags);
-        dest.writeParcelable(videoConfig, flags);
-        dest.writeInt(galleryLimit);
     }
 
     public static final Creator<PickerDataConfig> CREATOR = new Creator<PickerDataConfig>() {

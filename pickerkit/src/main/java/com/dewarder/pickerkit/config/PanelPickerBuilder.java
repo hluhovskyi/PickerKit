@@ -7,9 +7,9 @@ import android.support.annotation.Nullable;
 import android.view.View;
 
 import com.dewarder.pickerkit.ImmutablePoint;
-import com.dewarder.pickerkit.utils.Objects;
 import com.dewarder.pickerkit.activity.PanelPickerActivity;
 import com.dewarder.pickerkit.panel.PickerCategory;
+import com.dewarder.pickerkit.utils.Objects;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +18,9 @@ public final class PanelPickerBuilder {
 
     private View startPointView;
     private ImmutablePoint startPoint = ImmutablePoint.empty();
+
+    private PickerConfig uiConfig;
+    private PickerDataConfig dataConfig;
 
     private ArrayList<PickerCategory> pickerCategories = new ArrayList<>();
 
@@ -51,11 +54,17 @@ public final class PanelPickerBuilder {
         return this;
     }
 
-    public void start(Activity activity) {
-        PanelPickerActivity.start(activity, createConfig());
+    public PanelPickerBuilder setUIConfig(@NonNull PickerConfig uiConfig) {
+        Objects.requireNonNull(uiConfig);
+        this.uiConfig = uiConfig;
+        return this;
     }
 
-    public PickerPanelConfig createConfig() {
+    public void start(Activity activity) {
+        PanelPickerActivity.start(activity, build());
+    }
+
+    public PickerPanelConfig build() {
         return new PickerPanelConfig(this);
     }
 

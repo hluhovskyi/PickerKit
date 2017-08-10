@@ -10,12 +10,12 @@ import android.widget.TextView;
 
 import com.dewarder.pickerkit.R;
 
-public class AttachmentPanelPickerViewHolder extends RecyclerView.ViewHolder {
+public class PickerPanelCategoryViewHolder extends RecyclerView.ViewHolder {
 
     private final ImageView mCircle;
     private final TextView mName;
 
-    public AttachmentPanelPickerViewHolder(View view) {
+    public PickerPanelCategoryViewHolder(View view) {
         super(view);
         mCircle = (ImageView) view.findViewById(R.id.item_attachment_category_circle);
         mName = (TextView) view.findViewById(R.id.item_attachment_category_name);

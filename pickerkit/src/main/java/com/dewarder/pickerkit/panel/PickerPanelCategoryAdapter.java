@@ -12,19 +12,19 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class AttachmentPanelCategoryAdapter extends RecyclerView.Adapter<AttachmentPanelPickerViewHolder> {
+public class PickerPanelCategoryAdapter extends RecyclerView.Adapter<PickerPanelCategoryViewHolder> {
 
     private final ArrayList<PickerCategory> mCategories = new ArrayList<>();
     private OnAttachmentPanelCategoryClickListener mOnAttachmentPanelCategoryClickListener;
 
     @Override
-    public AttachmentPanelPickerViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public PickerPanelCategoryViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_attachment_category, parent, false);
-        return new AttachmentPanelPickerViewHolder(view);
+        return new PickerPanelCategoryViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(AttachmentPanelPickerViewHolder holder, int position) {
+    public void onBindViewHolder(PickerPanelCategoryViewHolder holder, int position) {
         PickerCategory item = mCategories.get(position);
         holder.itemView.setId(item.getId());
         holder.setName(item.getName());

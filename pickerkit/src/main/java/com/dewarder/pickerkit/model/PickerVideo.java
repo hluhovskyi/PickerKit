@@ -9,7 +9,7 @@ import com.dewarder.pickerkit.utils.Objects;
 
 import java.io.File;
 
-public final class PickerVideo implements Parcelable {
+public final class PickerVideo implements PickerBaseMedia, Parcelable {
 
     private final Uri source;
 
@@ -32,6 +32,7 @@ public final class PickerVideo implements Parcelable {
     }
 
     @NonNull
+    @Override
     public Uri getSource() {
         return source;
     }

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.provider.MediaStore;
 
+import com.dewarder.pickerkit.model.PickerVideo;
 import com.dewarder.pickerkit.utils.Queries;
 
 import java.io.File;
@@ -12,7 +13,7 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public final class MediaStoreVideoPickerDataProvider implements PickerDataProvider<File> {
+public final class MediaStoreVideoPickerDataProvider implements PickerDataProvider<PickerVideo> {
 
     private final ExecutorService mExecutor = Executors.newSingleThreadExecutor();
     private final ContentResolver mContentResolver;
@@ -24,7 +25,7 @@ public final class MediaStoreVideoPickerDataProvider implements PickerDataProvid
     }
 
     @Override
-    public void request(Callback<File> callback) {
+    public void request(Callback<PickerVideo> callback) {
         mExecutor.submit(() -> {
             Cursor cursor = Queries.newBuilder(mContentResolver)
                     .uri(MediaStore.Video.Media.EXTERNAL_CONTENT_URI)
@@ -32,17 +33,17 @@ public final class MediaStoreVideoPickerDataProvider implements PickerDataProvid
                     .orderByDesc(MediaStore.Video.Media.DATE_TAKEN)
                     .execute();
 
-            ArrayList<File> files = new ArrayList<>();
+            ArrayList<PickerVideo> videos = new ArrayList<>();
             if (cursor.moveToFirst()) {
                 int dataColumn = cursor.getColumnIndex(MediaStore.Video.Media.DATA);
                 do {
                     File file = new File(cursor.getString(dataColumn));
                     if (matchAnyExtension(file)) {
-                        files.add(file);
+                        videos.add(PickerVideo.fromFile(file));
                     }
                 } while (cursor.moveToNext());
             }
-            callback.onNext(files);
+            callback.onNext(videos);
             callback.onComplete();
             cursor.close();
         });

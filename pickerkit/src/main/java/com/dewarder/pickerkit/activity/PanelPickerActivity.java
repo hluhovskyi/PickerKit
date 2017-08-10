@@ -11,6 +11,8 @@ import android.view.ViewAnimationUtils;
 
 import com.annimon.stream.Stream;
 import com.dewarder.pickerkit.config.PickerConfig;
+import com.dewarder.pickerkit.model.PickerImage;
+import com.dewarder.pickerkit.model.PickerMedia;
 import com.dewarder.pickerkit.utils.Activities;
 import com.dewarder.pickerkit.FilePickerData;
 import com.dewarder.pickerkit.ImmutablePoint;
@@ -18,7 +20,7 @@ import com.dewarder.pickerkit.MediaStoreImagePickerDataProvider;
 import com.dewarder.pickerkit.PickerDataProvider;
 import com.dewarder.pickerkit.R;
 import com.dewarder.pickerkit.config.PickerPanelConfig;
-import com.dewarder.pickerkit.panel.AttachmentPanelView;
+import com.dewarder.pickerkit.panel.PickerPanelView;
 import com.dewarder.pickerkit.panel.OnAttachmentPanelCategoryClickListener;
 import com.dewarder.pickerkit.panel.PickerCategories;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
@@ -32,7 +34,7 @@ public final class PanelPickerActivity extends AppCompatActivity implements OnAt
     private static final String EXTRA_CONFIG = "EXTRA_CONFIG";
 
     private SlidingUpPanelLayout mSlidingPanel;
-    private AttachmentPanelView mPickerPanel;
+    private PickerPanelView mPickerPanel;
 
     public static void start(Activity activity) {
 
@@ -77,11 +79,11 @@ public final class PanelPickerActivity extends AppCompatActivity implements OnAt
             ViewAnimationUtils.createCircularReveal(mSlidingPanel, startPoint.getX(), startPoint.getY(), 0, 5000).setDuration(1000).start();
         });
 
-        new MediaStoreImagePickerDataProvider(this).request(new PickerDataProvider.Callback<File>() {
+        new MediaStoreImagePickerDataProvider(this).request(new PickerDataProvider.Callback<PickerImage>() {
             @Override
-            public void onNext(Collection<File> data) {
-                List<FilePickerData> pickerData = Stream.of(data).map(FilePickerData::from).toList();
-                mPickerPanel.post(() -> mPickerPanel.setData(pickerData));
+            public void onNext(Collection<PickerImage> data) {
+            //    List<FilePickerData> pickerData = Stream.of(data).map(FilePickerData::from).toList();
+             //   mPickerPanel.post(() -> mPickerPanel.setData(pickerData));
             }
 
             @Override

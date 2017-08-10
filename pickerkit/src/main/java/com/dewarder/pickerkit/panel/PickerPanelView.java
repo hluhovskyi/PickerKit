@@ -17,7 +17,7 @@ import android.widget.LinearLayout;
 import com.annimon.stream.Stream;
 import com.dewarder.pickerkit.FilePickerData;
 import com.dewarder.pickerkit.FilePickerDataPreviewFetcher;
-import com.dewarder.pickerkit.HashSetDataController;
+import com.dewarder.pickerkit.SimpleDataController;
 import com.dewarder.pickerkit.OnPickerItemCheckListener;
 import com.dewarder.pickerkit.OnPickerItemClickListener;
 import com.dewarder.pickerkit.PickerItemAdapter;
@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class AttachmentPanelView extends LinearLayout {
+public class PickerPanelView extends LinearLayout {
 
     private PickerItemAdapter.DataController<FilePickerData> mDataController;
 
@@ -39,7 +39,7 @@ public class AttachmentPanelView extends LinearLayout {
 
     private RecyclerView mCategoryRecycler;
     private GridLayoutManager mCategoryLayoutManager;
-    private AttachmentPanelCategoryAdapter mCategoryAdapter;
+    private PickerPanelCategoryAdapter mCategoryAdapter;
 
     private int mPickerSpacing;
     private int mCategoryMinWidth;
@@ -48,23 +48,23 @@ public class AttachmentPanelView extends LinearLayout {
     private int mLimit;
     private boolean mInitialized;
 
-    public AttachmentPanelView(Context context) {
+    public PickerPanelView(Context context) {
         super(context);
         init(context);
     }
 
-    public AttachmentPanelView(Context context, @Nullable AttributeSet attrs) {
+    public PickerPanelView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         init(context);
     }
 
-    public AttachmentPanelView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public PickerPanelView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init(context);
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public AttachmentPanelView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+    public PickerPanelView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         init(context);
     }
@@ -77,7 +77,7 @@ public class AttachmentPanelView extends LinearLayout {
         mCategoryMinWidth = getResources().getDimensionPixelSize(R.dimen.item_attachment_panel_category_min_width);
         mPickerSpacing = getResources().getDimensionPixelSize(R.dimen.attachment_panel_picker_spacing);
 
-        mDataController = new HashSetDataController<>();
+        mDataController = new SimpleDataController<>();
 
         mPickerRecycler = (RecyclerView) view.findViewById(R.id.attachment_panel_picker_recycler);
         mPickerLayoutManager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
@@ -92,7 +92,7 @@ public class AttachmentPanelView extends LinearLayout {
 
         mCategoryRecycler = (RecyclerView) view.findViewById(R.id.attachment_panel_category_recycler);
         mCategoryRecycler.setItemAnimator(null);
-        mCategoryAdapter = new AttachmentPanelCategoryAdapter();
+        mCategoryAdapter = new PickerPanelCategoryAdapter();
         mCategoryRecycler.setAdapter(mCategoryAdapter);
     }
 
@@ -163,11 +163,6 @@ public class AttachmentPanelView extends LinearLayout {
     public void setOnPickerItemCheckListener(OnPickerItemCheckListener<FilePickerData> listener) {
         mPickerAdapter.setOnPickerItemCheckListener(listener);
     }
-
-/*    public void setPickerController(PickerItemAdapter.Controller<FilePickerData> controller) {
-        mDataController = controller;
-        mPickerAdapter.setPickerController(controller);
-    }*/
 
     public void setLimit(int limit) {
         mLimit = limit;

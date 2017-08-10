@@ -14,7 +14,7 @@ import java.util.List;
 
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
-public final class PickerItemAdapter<T extends PickerItem> extends RecyclerView.Adapter<ItemPickerViewHolder> {
+public final class PickerItemAdapter<T> extends RecyclerView.Adapter<ItemPickerViewHolder> {
 
     public interface DataController<T> {
 
@@ -139,7 +139,7 @@ public final class PickerItemAdapter<T extends PickerItem> extends RecyclerView.
         }
     }
 
-    public final static class Builder<T extends PickerItem> {
+    public final static class Builder<T> {
 
         private DataController<T> mDataController;
         private AccessibilityController<T> mAccessibilityController;
@@ -194,9 +194,9 @@ public final class PickerItemAdapter<T extends PickerItem> extends RecyclerView.
             if (mPreviewFetcher == null) {
                 throw new IllegalStateException("PreviewFetcher can't be null. Set it via `setPreviewFetcher` call.");
             }
-            DataController<T> dataController = mDataController != null ? mDataController : new HashSetDataController();
+            DataController<T> dataController = mDataController != null ? mDataController : new SimpleDataController();
 
-            PickerItemAdapter<T> adapter = new PickerItemAdapter<T>(dataController, mAccessibilityController, mPreviewFetcher);
+            PickerItemAdapter<T> adapter = new PickerItemAdapter<>(dataController, mAccessibilityController, mPreviewFetcher);
             adapter.mItems.addAll(mData);
             adapter.mPickEnabled = mPickEnabled;
             adapter.mPreviewParams = mPreviewParams != null ? mPreviewParams : PreviewFetcher.Params.empty();

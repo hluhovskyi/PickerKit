@@ -2,7 +2,6 @@ package com.dewarder.pickerkit.activity;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -20,7 +19,6 @@ import android.widget.TextView;
 import com.annimon.stream.Stream;
 import com.dewarder.pickerkit.CategoryAdapter;
 import com.dewarder.pickerkit.CategoryPreviewFetcher;
-import com.dewarder.pickerkit.FileCategoryData;
 import com.dewarder.pickerkit.GridSpacingItemDecoration;
 import com.dewarder.pickerkit.MediaStoreImagePickerDataProvider;
 import com.dewarder.pickerkit.MediaStoreVideoPickerDataProvider;
@@ -29,35 +27,41 @@ import com.dewarder.pickerkit.PickerDataProvider;
 import com.dewarder.pickerkit.PickerPanelView;
 import com.dewarder.pickerkit.R;
 import com.dewarder.pickerkit.RequestCodeGenerator;
-import com.dewarder.pickerkit.Result;
 import com.dewarder.pickerkit.config.PickerConfig;
-import com.dewarder.pickerkit.config.PickerUIConfig;
+import com.dewarder.pickerkit.config.PickerDataConfig;
+import com.dewarder.pickerkit.model.PickerImage;
+import com.dewarder.pickerkit.model.PickerMedia;
+import com.dewarder.pickerkit.model.PickerMediaFolder;
+import com.dewarder.pickerkit.model.PickerVideo;
+import com.dewarder.pickerkit.result.PickerGalleryResult;
 import com.dewarder.pickerkit.utils.Activities;
 import com.dewarder.pickerkit.utils.Colors;
 import com.dewarder.pickerkit.utils.Recyclers;
 import com.github.rahatarmanahmed.cpv.CircularProgressView;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public final class PickerGalleryFolderActivity extends AppCompatActivity implements
-        OnCategoryClickListener<FileCategoryData>,
+        OnCategoryClickListener<PickerMediaFolder>,
         PickerPanelView.OnSubmitClickListener,
         PickerPanelView.OnCancelClickListener,
         PickerPanelView.OnCounterClickListener {
 
     private static final String EXTRA_RESULT = "EXTRA_RESULT";
     private static final String EXTRA_CONFIG = "EXTRA_CONFIG";
+    private static final String EXTRA_DATA_CONFIG = "EXTRA_DATA_CONFIG";
 
     private static final int IMAGE_PICKER_ACTIVITY_REQUEST_CODE = 1;
 
     private PickerConfig config;
+    private PickerDataConfig dataConfig;
 
-    private PickerDataProvider<File> mImageDataProvider;
-    private PickerDataProvider<File> mVideoDataProvider;
-    private PickerDataProvider<File> mDataProvider;
+    private PickerDataProvider<PickerImage> mImageDataProvider;
+    private PickerDataProvider<PickerVideo> mVideoDataProvider;
+    private PickerDataProvider<PickerMedia> mDataProvider;
 
     private Toolbar mToolbar;
     private TextView mTitle;
@@ -66,36 +70,46 @@ public final class PickerGalleryFolderActivity extends AppCompatActivity impleme
 
     private RecyclerView mCategoryRecycler;
     private GridLayoutManager mCategoryLayoutManager;
-    private CategoryAdapter<FileCategoryData> mCategoryAdapter;
+    private CategoryAdapter mCategoryAdapter;
 
     private int mAccentColor;
     private int mCategoryItemMinSize;
     private int mCategoryItemSpacing;
 
-    private final ArrayList<File> mPickedData = new ArrayList<>();
+    private final ArrayList<PickerMedia> selected = new ArrayList<>();
 
-    public static Result getResult(Intent intent) {
+    public static PickerGalleryResult getGalleryResult(Intent intent) {
         return intent.getParcelableExtra(EXTRA_RESULT);
     }
 
     public static void open(@NonNull Activity activity) {
-        open(activity, PickerConfig.defaultInstance());
+        open(activity,
+                PickerConfig.defaultInstance(),
+                PickerDataConfig.defaultInstance());
     }
 
-    public static void open(@NonNull Activity activity, @NonNull PickerConfig config) {
+    public static void open(@NonNull Activity activity,
+                            @NonNull PickerConfig config,
+                            @NonNull PickerDataConfig dataConfig) {
+
         Intent intent = new Intent(activity, PickerGalleryFolderActivity.class);
         intent.putExtra(EXTRA_CONFIG, config);
+        intent.putExtra(EXTRA_DATA_CONFIG, dataConfig);
         activity.startActivity(intent);
     }
 
     public static int openForResult(@NonNull Activity activity) {
-        return openForResult(activity, PickerConfig.defaultInstance());
+        return openForResult(activity,
+                PickerConfig.defaultInstance());
     }
 
-    public static int openForResult(@NonNull Activity activity, @NonNull PickerConfig config) {
+    public static int openForResult(@NonNull Activity activity,
+                                    @NonNull PickerConfig config) {
+
         int requestCode = RequestCodeGenerator.generate();
         Intent intent = new Intent(activity, PickerGalleryFolderActivity.class);
         intent.putExtra(EXTRA_CONFIG, config);
+        intent.putExtra(EXTRA_DATA_CONFIG, PickerDataConfig.defaultInstance());
         activity.startActivityForResult(intent, requestCode);
         return requestCode;
     }
@@ -107,8 +121,9 @@ public final class PickerGalleryFolderActivity extends AppCompatActivity impleme
         setContentView(R.layout.activity_category);
 
         config = Activities.getParcelableArgument(this, EXTRA_CONFIG);
-        PickerUIConfig uiConfig = config.getUiConfig();
-        mAccentColor = Colors.orElseAccent(this, uiConfig.getAccentColor());
+        dataConfig = Activities.getParcelableArgument(this, EXTRA_DATA_CONFIG);
+
+        mAccentColor = Colors.orElseAccent(this, config.getAccentColor());
 
         mCategoryItemMinSize = getResources().getDimensionPixelSize(R.dimen.item_category_min_size);
         mCategoryItemSpacing = getResources().getDimensionPixelSize(R.dimen.spacing_default);
@@ -118,7 +133,7 @@ public final class PickerGalleryFolderActivity extends AppCompatActivity impleme
                 .setExtensions(".mp4")
                 .build();
 
-        mDataProvider = mImageDataProvider;
+        mDataProvider = ImageProviderWrapper.wrap(mImageDataProvider);
 
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
@@ -140,9 +155,10 @@ public final class PickerGalleryFolderActivity extends AppCompatActivity impleme
         mCategoryRecycler.post(() -> {
             int spanCount = Recyclers.calculateSpanCount(mCategoryRecycler, mCategoryItemMinSize);
             int itemSize = Recyclers.calculateItemSize(mCategoryRecycler, spanCount, mCategoryItemMinSize, mCategoryItemSpacing);
+
             mCategoryLayoutManager = new GridLayoutManager(this, spanCount);
             mCategoryRecycler.addItemDecoration(new GridSpacingItemDecoration(spanCount, mCategoryItemSpacing, true));
-            mCategoryAdapter = new CategoryAdapter<>(new CategoryPreviewFetcher(this));
+            mCategoryAdapter = new CategoryAdapter(new CategoryPreviewFetcher(this));
             mCategoryAdapter.setCategoryItemSize(itemSize);
             mCategoryAdapter.setOnCategoryClickListener(this);
             mCategoryRecycler.setAdapter(mCategoryAdapter);
@@ -158,12 +174,12 @@ public final class PickerGalleryFolderActivity extends AppCompatActivity impleme
         mCategoryRecycler.setVisibility(View.INVISIBLE);
         mProgress.setVisibility(View.VISIBLE);
 
-        mDataProvider.request(new PickerDataProvider.Callback<File>() {
+        mDataProvider.request(new PickerDataProvider.Callback<PickerMedia>() {
             @Override
-            public void onNext(Collection<File> data) {
-                List<FileCategoryData> categories = Stream.of(data)
-                        .chunkBy(File::getParent)
-                        .map(FileCategoryData::fromFiles)
+            public void onNext(Collection<PickerMedia> data) {
+                List<PickerMediaFolder> categories = Stream.of(data)
+                        .chunkBy(media -> media.getSource().getLastPathSegment())
+                        .map(PickerMediaFolder::fromMedia)
                         .toList();
 
                 mCategoryRecycler.post(() -> mCategoryAdapter.appendCategories(categories));
@@ -187,19 +203,19 @@ public final class PickerGalleryFolderActivity extends AppCompatActivity impleme
     }
 
     @Override
-    public void onCategoryClicked(FileCategoryData category) {
-        List<File> pickedPart = Stream.of(mPickedData)
-                .filter(f -> category.getData().contains(f))
+    public void onCategoryClicked(PickerMediaFolder category) {
+        List<PickerMedia> pickedPart = Stream.of(selected)
+                .filter(f -> category.getChildren().contains(f))
                 .toList();
 
-        new PickerGalleryActivity.Builder(this)
+        new PickerGalleryActivity.Starter(this)
                 .setRequestCode(IMAGE_PICKER_ACTIVITY_REQUEST_CODE)
-                .setName(category.getName())
-                .setAccentColor(mAccentColor)
-                .setData(category.getData())
-                .setPicked(pickedPart)
-                .setTotalPicked(mPickedData.size())
-                .setLimit(config.getDataConfig().getGalleryLimit())
+                .setTitle(category.getName())
+                //  .setAccentColor(mAccentColor)
+                .setData(category.getChildren())
+                .setSelected(pickedPart)
+                .setTotalSelected(selected.size())
+                .setLimit(dataConfig.getGalleryLimit())
                 .start();
     }
 
@@ -222,19 +238,19 @@ public final class PickerGalleryFolderActivity extends AppCompatActivity impleme
         }
 
         if (requestCode == IMAGE_PICKER_ACTIVITY_REQUEST_CODE) {
-            PickerGalleryActivity.Result result = PickerGalleryActivity.getResult(data);
+            PickerGalleryResult result = PickerGalleryActivity.getGalleryResult(data);
             if (result.isCanceled()) {
                 finish();
                 return;
             }
 
-            mPickedData.removeAll(result.getUnchecked());
-            mPickedData.addAll(result.getChecked());
+            selected.removeAll(result.getUnselected());
+            selected.addAll(result.getSelected());
 
             if (result.isSubmitted()) {
                 submit();
             } else {
-                mPickerPanel.setPickedCount(mPickedData.size());
+                mPickerPanel.setPickedCount(selected.size());
             }
         }
     }
@@ -247,10 +263,10 @@ public final class PickerGalleryFolderActivity extends AppCompatActivity impleme
         popupMenu.setOnMenuItemClickListener(item -> {
             if (item.getItemId() == 0) {
                 mTitle.setText(R.string.label_photos);
-                mDataProvider = mImageDataProvider;
+                mDataProvider = ImageProviderWrapper.wrap(mImageDataProvider);
             } else {
                 mTitle.setText(R.string.label_videos);
-                mDataProvider = mVideoDataProvider;
+                mDataProvider = VideoProviderWrapper.wrap(mVideoDataProvider);
             }
             requestData();
             return true;
@@ -270,20 +286,21 @@ public final class PickerGalleryFolderActivity extends AppCompatActivity impleme
 
     @Override
     public void onCounterClicked() {
-        new PickerGalleryActivity.Builder(this)
+        new PickerGalleryActivity.Starter(this)
                 .setRequestCode(IMAGE_PICKER_ACTIVITY_REQUEST_CODE)
-                .setName(getString(R.string.label_picked))
-                .setAccentColor(mAccentColor)
-                .setData(mPickedData)
-                .setPicked(mPickedData)
-                .setTotalPicked(mPickedData.size())
-                .setLimit(config.getDataConfig().getGalleryLimit())
+                .setTitle(getString(R.string.label_picked))
+                //.setAccentColor(mAccentColor)
+                .setData(selected)
+                .setSelected(selected)
+                .setTotalSelected(selected.size())
+                .setLimit(dataConfig.getGalleryLimit())
                 .start();
     }
 
     private void submit() {
         Intent intent = new Intent();
-        Result result = Result.from(Stream.of(mPickedData).map(Uri::fromFile).toList());
+        //TODO: Unselected isn't handled
+        PickerGalleryResult result = ResultGallery.submit(selected, Collections.emptyList());
         intent.putExtra(EXTRA_RESULT, result);
         setResult(RESULT_OK, intent);
         finish();
@@ -292,5 +309,79 @@ public final class PickerGalleryFolderActivity extends AppCompatActivity impleme
     private void cancel() {
         setResult(RESULT_CANCELED);
         finish();
+    }
+
+    private static class ImageProviderWrapper implements PickerDataProvider<PickerMedia> {
+
+        private final PickerDataProvider<PickerImage> delegate;
+
+        private ImageProviderWrapper(PickerDataProvider<PickerImage> delegate) {
+            this.delegate = delegate;
+        }
+
+        public static PickerDataProvider<PickerMedia> wrap(PickerDataProvider<PickerImage> provider) {
+            return new ImageProviderWrapper(provider);
+        }
+
+        @Override
+        public void request(Callback<PickerMedia> callback) {
+            delegate.request(new Callback<PickerImage>() {
+                @Override
+                public void onNext(Collection<PickerImage> data) {
+                    callback.onNext(
+                            Stream.of(data)
+                                    .map(PickerImage::getSource)
+                                    .map(PickerMedia::image)
+                                    .toList());
+                }
+
+                @Override
+                public void onComplete() {
+                    callback.onComplete();
+                }
+
+                @Override
+                public void onError(Throwable throwable) {
+                    callback.onError(throwable);
+                }
+            });
+        }
+    }
+
+    private static class VideoProviderWrapper implements PickerDataProvider<PickerMedia> {
+
+        private final PickerDataProvider<PickerVideo> delegate;
+
+        private VideoProviderWrapper(PickerDataProvider<PickerVideo> delegate) {
+            this.delegate = delegate;
+        }
+
+        public static PickerDataProvider<PickerMedia> wrap(PickerDataProvider<PickerVideo> provider) {
+            return new VideoProviderWrapper(provider);
+        }
+
+        @Override
+        public void request(Callback<PickerMedia> callback) {
+            delegate.request(new Callback<PickerVideo>() {
+                @Override
+                public void onNext(Collection<PickerVideo> data) {
+                    callback.onNext(
+                            Stream.of(data)
+                                    .map(PickerVideo::getSource)
+                                    .map(PickerMedia::video)
+                                    .toList());
+                }
+
+                @Override
+                public void onComplete() {
+                    callback.onComplete();
+                }
+
+                @Override
+                public void onError(Throwable throwable) {
+                    callback.onError(throwable);
+                }
+            });
+        }
     }
 }

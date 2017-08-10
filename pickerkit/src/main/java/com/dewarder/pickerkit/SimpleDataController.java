@@ -5,32 +5,32 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public final class HashSetDataController<T> implements PickerItemAdapter.DataController<T> {
+public final class SimpleDataController<T> implements PickerItemAdapter.DataController<T> {
 
-    private final Set<T> mPicked = new HashSet<>();
+    private final Set<T> picked = new HashSet<>();
 
     @Override
     public List<T> getPicked() {
-        return new ArrayList<>(mPicked);
+        return new ArrayList<>(picked);
     }
 
     @Override
     public boolean isPicked(T item) {
-        return mPicked.contains(item);
+        return picked.contains(item);
     }
 
     @Override
     public void onPick(T item) {
-        mPicked.add(item);
+        picked.add(item);
     }
 
     @Override
     public void onUnpick(T item) {
-        mPicked.remove(item);
+        picked.remove(item);
     }
 
     @Override
     public void clearPicked() {
-        mPicked.clear();
+        picked.clear();
     }
 }

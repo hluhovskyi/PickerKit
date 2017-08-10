@@ -5,12 +5,13 @@ import android.content.Context;
 import android.database.Cursor;
 import android.provider.MediaStore;
 
+import com.dewarder.pickerkit.model.PickerImage;
 import com.dewarder.pickerkit.utils.Queries;
 
 import java.io.File;
 import java.util.ArrayList;
 
-public final class MediaStoreImagePickerDataProvider implements PickerDataProvider<File> {
+public final class MediaStoreImagePickerDataProvider implements PickerDataProvider<PickerImage> {
 
     private final ContentResolver mContentResolver;
 
@@ -19,19 +20,19 @@ public final class MediaStoreImagePickerDataProvider implements PickerDataProvid
     }
 
     @Override
-    public void request(Callback<File> callback) {
+    public void request(Callback<PickerImage> callback) {
         Cursor cursor = Queries.newBuilder(mContentResolver)
                 .uri(MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
                 .projection(MediaStore.Images.Media._ID, MediaStore.Images.Media.DATE_TAKEN, MediaStore.Images.Media.DATA)
                 .orderByDesc(MediaStore.Images.Media.DATE_TAKEN)
                 .execute();
 
-        ArrayList<File> files = new ArrayList<>();
+        ArrayList<PickerImage> files = new ArrayList<>();
         if (cursor.moveToFirst()) {
             int dataColumn = cursor.getColumnIndex(MediaStore.Images.Media.DATA);
             do {
                 File file = new File(cursor.getString(dataColumn));
-                files.add(file);
+                files.add(PickerImage.fromFile(file));
             } while (cursor.moveToNext());
         }
         callback.onNext(files);

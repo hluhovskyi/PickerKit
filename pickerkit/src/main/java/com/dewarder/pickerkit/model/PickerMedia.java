@@ -9,7 +9,7 @@ import com.dewarder.pickerkit.utils.Objects;
 
 import java.io.File;
 
-public final class PickerMedia implements Parcelable {
+public final class PickerMedia implements PickerBaseMedia, Parcelable {
 
     private final Uri source;
     private final PickerMediaType mediaType;
@@ -51,6 +51,7 @@ public final class PickerMedia implements Parcelable {
     }
 
     @NonNull
+    @Override
     public Uri getSource() {
         return source;
     }
@@ -60,20 +61,51 @@ public final class PickerMedia implements Parcelable {
         return mediaType;
     }
 
+    public boolean isImage() {
+        return mediaType == PickerMediaType.IMAGE;
+    }
+
     @NonNull
     public PickerImage getImage() {
         if (image == null) {
-            throw new IllegalStateException("There is no image in this media. Check by `getMediaType` before");
+            throw new IllegalStateException("There is no image in this media. Check by `isImage()` before");
         }
         return image;
+    }
+
+    public boolean isVideo() {
+        return mediaType == PickerMediaType.VIDEO;
     }
 
     @NonNull
     public PickerVideo getVideo() {
         if (video == null) {
-            throw new IllegalStateException("There is no video in this media. Check by `getMediaType` before");
+            throw new IllegalStateException("There is no video in this media. Check by `isVideo()` before");
         }
         return video;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = source.hashCode();
+        result = 31 * result + mediaType.hashCode();
+        result = 31 * result + (image != null ? image.hashCode() : 0);
+        result = 31 * result + (video != null ? video.hashCode() : 0);
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        PickerMedia that = (PickerMedia) o;
+
+        if (!source.equals(that.source)) return false;
+        if (mediaType != that.mediaType) return false;
+
+        if (image != null ? !image.equals(that.image) : that.image != null) return false;
+        return video != null ? video.equals(that.video) : that.video == null;
     }
 
     @Override
