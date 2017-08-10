@@ -14,28 +14,26 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.LinearLayout;
 
-import com.annimon.stream.Stream;
-import com.dewarder.pickerkit.FilePickerData;
-import com.dewarder.pickerkit.FilePickerDataPreviewFetcher;
-import com.dewarder.pickerkit.SimpleDataController;
 import com.dewarder.pickerkit.OnPickerItemCheckListener;
 import com.dewarder.pickerkit.OnPickerItemClickListener;
 import com.dewarder.pickerkit.PickerItemAdapter;
+import com.dewarder.pickerkit.PickerPreviewFetcher;
 import com.dewarder.pickerkit.R;
+import com.dewarder.pickerkit.SimpleDataController;
 import com.dewarder.pickerkit.SpaceItemDecoration;
+import com.dewarder.pickerkit.model.PickerMedia;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class PickerPanelView extends LinearLayout {
 
-    private PickerItemAdapter.DataController<FilePickerData> mDataController;
+    private PickerItemAdapter.DataController<PickerMedia> mDataController;
 
     private RecyclerView mPickerRecycler;
     private LinearLayoutManager mPickerLayoutManager;
-    private PickerItemAdapter<FilePickerData> mPickerAdapter;
+    private PickerItemAdapter<PickerMedia> mPickerAdapter;
 
     private RecyclerView mCategoryRecycler;
     private GridLayoutManager mCategoryLayoutManager;
@@ -82,8 +80,8 @@ public class PickerPanelView extends LinearLayout {
         mPickerRecycler = (RecyclerView) view.findViewById(R.id.attachment_panel_picker_recycler);
         mPickerLayoutManager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
         mPickerRecycler.setLayoutManager(mPickerLayoutManager);
-        mPickerAdapter = new PickerItemAdapter.Builder<FilePickerData>()
-                .setPreviewFetcher(new FilePickerDataPreviewFetcher(context))
+        mPickerAdapter = new PickerItemAdapter.Builder<PickerMedia>()
+                .setPreviewFetcher(new PickerPreviewFetcher(context))
                 .setDataController(mDataController)
                 .build();
 
@@ -132,7 +130,7 @@ public class PickerPanelView extends LinearLayout {
         mCategoryAdapter.remove(categoryId);
     }
 
-    public void setData(@NonNull List<FilePickerData> data) {
+    public void setData(@NonNull List<PickerMedia> data) {
         mPickerAdapter.setData(data);
     }
 
@@ -148,19 +146,19 @@ public class PickerPanelView extends LinearLayout {
         mDataController.clearPicked();
     }
 
-    public List<File> getPicked() {
-        return Stream.of(mDataController.getPicked()).map(FilePickerData::getSource).toList();
+    public List<PickerMedia> getPicked() {
+        return new ArrayList<>(mDataController.getPicked());
     }
 
-    public void setOnAttachmentPanelCategoryClickListener(@Nullable OnAttachmentPanelCategoryClickListener listener) {
+    public void setOnAttachmentPanelCategoryClickListener(@Nullable OnPickerPanelCategoryClickListener listener) {
         mCategoryAdapter.setOnAttachmentPanelCategoryClickListener(listener);
     }
 
-    public void setOnPickerItemClickListener(OnPickerItemClickListener<FilePickerData> listener) {
+    public void setOnPickerItemClickListener(OnPickerItemClickListener<PickerMedia> listener) {
         mPickerAdapter.setOnPickerItemClickListener(listener);
     }
 
-    public void setOnPickerItemCheckListener(OnPickerItemCheckListener<FilePickerData> listener) {
+    public void setOnPickerItemCheckListener(OnPickerItemCheckListener<PickerMedia> listener) {
         mPickerAdapter.setOnPickerItemCheckListener(listener);
     }
 

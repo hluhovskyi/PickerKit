@@ -14,22 +14,20 @@ import com.dewarder.pickerkit.config.PickerConfig;
 import com.dewarder.pickerkit.model.PickerImage;
 import com.dewarder.pickerkit.model.PickerMedia;
 import com.dewarder.pickerkit.utils.Activities;
-import com.dewarder.pickerkit.FilePickerData;
 import com.dewarder.pickerkit.ImmutablePoint;
-import com.dewarder.pickerkit.MediaStoreImagePickerDataProvider;
-import com.dewarder.pickerkit.PickerDataProvider;
+import com.dewarder.pickerkit.provider.MediaStoreImagePickerDataProvider;
+import com.dewarder.pickerkit.provider.PickerDataProvider;
 import com.dewarder.pickerkit.R;
 import com.dewarder.pickerkit.config.PickerPanelConfig;
 import com.dewarder.pickerkit.panel.PickerPanelView;
-import com.dewarder.pickerkit.panel.OnAttachmentPanelCategoryClickListener;
+import com.dewarder.pickerkit.panel.OnPickerPanelCategoryClickListener;
 import com.dewarder.pickerkit.panel.PickerCategories;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
-import java.io.File;
 import java.util.Collection;
 import java.util.List;
 
-public final class PanelPickerActivity extends AppCompatActivity implements OnAttachmentPanelCategoryClickListener {
+public final class PanelPickerActivity extends AppCompatActivity implements OnPickerPanelCategoryClickListener {
 
     private static final String EXTRA_CONFIG = "EXTRA_CONFIG";
 
@@ -79,11 +77,15 @@ public final class PanelPickerActivity extends AppCompatActivity implements OnAt
             ViewAnimationUtils.createCircularReveal(mSlidingPanel, startPoint.getX(), startPoint.getY(), 0, 5000).setDuration(1000).start();
         });
 
-        new MediaStoreImagePickerDataProvider(this).request(new PickerDataProvider.Callback<PickerImage>() {
+        MediaStoreImagePickerDataProvider.of(this).request(new PickerDataProvider.Callback<PickerImage>() {
             @Override
             public void onNext(Collection<PickerImage> data) {
-            //    List<FilePickerData> pickerData = Stream.of(data).map(FilePickerData::from).toList();
-             //   mPickerPanel.post(() -> mPickerPanel.setData(pickerData));
+                List<PickerMedia> pickerData = Stream.of(data)
+                        .map(PickerImage::getSource)
+                        .map(PickerMedia::image)
+                        .toList();
+
+                mPickerPanel.post(() -> mPickerPanel.setData(pickerData));
             }
 
             @Override
@@ -99,7 +101,7 @@ public final class PanelPickerActivity extends AppCompatActivity implements OnAt
     }
 
     @Override
-    public void onPanelPickerClicked(@IdRes int id) {
+    public void onPickerCategoryClicked(@IdRes int id) {
         PickerKit.getInstance().requestOpenPicker(this, id, PickerConfig.defaultInstance());
     }
 }

@@ -1,12 +1,10 @@
 package com.dewarder.sample;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
-import com.dewarder.pickerkit.MediaStoreImagePickerDataProvider;
+import com.dewarder.pickerkit.provider.MediaStoreImagePickerDataProvider;
 import com.dewarder.pickerkit.activity.PickerKit;
 import com.dewarder.pickerkit.config.PanelPickerBuilder;
 import com.dewarder.pickerkit.panel.PickerCategories;
@@ -14,11 +12,6 @@ import com.dewarder.pickerkit.panel.PickerPanelView;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 public class MainActivity extends AppCompatActivity {
-
-    private static final int PERMISSION_REQUEST_CODE = 10;
-    private static final int PICKER_REQUEST_CODE = 100;
-
-    private MediaStoreImagePickerDataProvider mPickerDataProvider;
 
     private SlidingUpPanelLayout mSlidingPanel;
     private PickerPanelView mAttachmentPanel;
@@ -31,10 +24,7 @@ public class MainActivity extends AppCompatActivity {
         new PanelPickerBuilder()
                 .addPickerCategories(PickerCategories.all(this))
                 .setStartPoint(mAttachmentPanel)
-
                 .build();
-
-        mPickerDataProvider = new MediaStoreImagePickerDataProvider(this);
 
         mSlidingPanel = (SlidingUpPanelLayout) findViewById(R.id.sliding_panel);
         mSlidingPanel.setFadeOnClickListener(v -> mSlidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN));

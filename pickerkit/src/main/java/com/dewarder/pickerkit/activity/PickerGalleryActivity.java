@@ -15,7 +15,7 @@ import android.view.MenuItem;
 
 import com.annimon.stream.Stream;
 import com.dewarder.pickerkit.GridSpacingItemDecoration;
-import com.dewarder.pickerkit.PickedMediaPreviewFetcher;
+import com.dewarder.pickerkit.PickerPreviewFetcher;
 import com.dewarder.pickerkit.PickerItemAdapter;
 import com.dewarder.pickerkit.PickerPanelView;
 import com.dewarder.pickerkit.PreviewFetcher;
@@ -111,7 +111,7 @@ public final class PickerGalleryActivity extends AppCompatActivity implements
             mPickerLayoutManager = new GridLayoutManager(this, spanCount);
             mPickerRecycler.addItemDecoration(new GridSpacingItemDecoration(spanCount, mItemSpacing, true));
             mPickerAdapter = new PickerItemAdapter.Builder<PickerMedia>()
-                    .setPreviewFetcher(new PickedMediaPreviewFetcher(this))
+                    .setPreviewFetcher(new PickerPreviewFetcher(this))
                     .setDataController(this)
                     .setAccessibilityController(this)
                     .setPreviewParams(PreviewFetcher.Params.of(itemSize, itemSize))

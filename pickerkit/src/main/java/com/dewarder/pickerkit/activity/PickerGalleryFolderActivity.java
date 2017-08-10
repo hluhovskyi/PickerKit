@@ -17,13 +17,10 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.annimon.stream.Stream;
-import com.dewarder.pickerkit.CategoryAdapter;
-import com.dewarder.pickerkit.CategoryPreviewFetcher;
+import com.dewarder.pickerkit.PickerFolderAdapter;
+import com.dewarder.pickerkit.PickerMediaFolderPreviewFetcher;
 import com.dewarder.pickerkit.GridSpacingItemDecoration;
-import com.dewarder.pickerkit.MediaStoreImagePickerDataProvider;
-import com.dewarder.pickerkit.MediaStoreVideoPickerDataProvider;
 import com.dewarder.pickerkit.OnCategoryClickListener;
-import com.dewarder.pickerkit.PickerDataProvider;
 import com.dewarder.pickerkit.PickerPanelView;
 import com.dewarder.pickerkit.R;
 import com.dewarder.pickerkit.RequestCodeGenerator;
@@ -33,6 +30,10 @@ import com.dewarder.pickerkit.model.PickerImage;
 import com.dewarder.pickerkit.model.PickerMedia;
 import com.dewarder.pickerkit.model.PickerMediaFolder;
 import com.dewarder.pickerkit.model.PickerVideo;
+import com.dewarder.pickerkit.provider.MediaStoreImagePickerDataProvider;
+import com.dewarder.pickerkit.provider.MediaStoreVideoPickerDataProvider;
+import com.dewarder.pickerkit.provider.PickerDataProvider;
+import com.dewarder.pickerkit.provider.PickerMediaProviderWrapper;
 import com.dewarder.pickerkit.result.PickerGalleryResult;
 import com.dewarder.pickerkit.utils.Activities;
 import com.dewarder.pickerkit.utils.Colors;
@@ -70,7 +71,7 @@ public final class PickerGalleryFolderActivity extends AppCompatActivity impleme
 
     private RecyclerView mCategoryRecycler;
     private GridLayoutManager mCategoryLayoutManager;
-    private CategoryAdapter mCategoryAdapter;
+    private PickerFolderAdapter mCategoryAdapter;
 
     private int mAccentColor;
     private int mCategoryItemMinSize;
@@ -128,12 +129,12 @@ public final class PickerGalleryFolderActivity extends AppCompatActivity impleme
         mCategoryItemMinSize = getResources().getDimensionPixelSize(R.dimen.item_category_min_size);
         mCategoryItemSpacing = getResources().getDimensionPixelSize(R.dimen.spacing_default);
 
-        mImageDataProvider = new MediaStoreImagePickerDataProvider(this);
+        mImageDataProvider = MediaStoreImagePickerDataProvider.of(this);
         mVideoDataProvider = new MediaStoreVideoPickerDataProvider.Builder(this)
                 .setExtensions(".mp4")
                 .build();
 
-        mDataProvider = ImageProviderWrapper.wrap(mImageDataProvider);
+        mDataProvider = PickerMediaProviderWrapper.wrapImage(mImageDataProvider);
 
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
@@ -158,7 +159,7 @@ public final class PickerGalleryFolderActivity extends AppCompatActivity impleme
 
             mCategoryLayoutManager = new GridLayoutManager(this, spanCount);
             mCategoryRecycler.addItemDecoration(new GridSpacingItemDecoration(spanCount, mCategoryItemSpacing, true));
-            mCategoryAdapter = new CategoryAdapter(new CategoryPreviewFetcher(this));
+            mCategoryAdapter = new PickerFolderAdapter(new PickerMediaFolderPreviewFetcher(this));
             mCategoryAdapter.setCategoryItemSize(itemSize);
             mCategoryAdapter.setOnCategoryClickListener(this);
             mCategoryRecycler.setAdapter(mCategoryAdapter);
@@ -263,10 +264,10 @@ public final class PickerGalleryFolderActivity extends AppCompatActivity impleme
         popupMenu.setOnMenuItemClickListener(item -> {
             if (item.getItemId() == 0) {
                 mTitle.setText(R.string.label_photos);
-                mDataProvider = ImageProviderWrapper.wrap(mImageDataProvider);
+                mDataProvider = PickerMediaProviderWrapper.wrapImage(mImageDataProvider);
             } else {
                 mTitle.setText(R.string.label_videos);
-                mDataProvider = VideoProviderWrapper.wrap(mVideoDataProvider);
+                mDataProvider = PickerMediaProviderWrapper.wrapVideo(mVideoDataProvider);
             }
             requestData();
             return true;
@@ -309,79 +310,5 @@ public final class PickerGalleryFolderActivity extends AppCompatActivity impleme
     private void cancel() {
         setResult(RESULT_CANCELED);
         finish();
-    }
-
-    private static class ImageProviderWrapper implements PickerDataProvider<PickerMedia> {
-
-        private final PickerDataProvider<PickerImage> delegate;
-
-        private ImageProviderWrapper(PickerDataProvider<PickerImage> delegate) {
-            this.delegate = delegate;
-        }
-
-        public static PickerDataProvider<PickerMedia> wrap(PickerDataProvider<PickerImage> provider) {
-            return new ImageProviderWrapper(provider);
-        }
-
-        @Override
-        public void request(Callback<PickerMedia> callback) {
-            delegate.request(new Callback<PickerImage>() {
-                @Override
-                public void onNext(Collection<PickerImage> data) {
-                    callback.onNext(
-                            Stream.of(data)
-                                    .map(PickerImage::getSource)
-                                    .map(PickerMedia::image)
-                                    .toList());
-                }
-
-                @Override
-                public void onComplete() {
-                    callback.onComplete();
-                }
-
-                @Override
-                public void onError(Throwable throwable) {
-                    callback.onError(throwable);
-                }
-            });
-        }
-    }
-
-    private static class VideoProviderWrapper implements PickerDataProvider<PickerMedia> {
-
-        private final PickerDataProvider<PickerVideo> delegate;
-
-        private VideoProviderWrapper(PickerDataProvider<PickerVideo> delegate) {
-            this.delegate = delegate;
-        }
-
-        public static PickerDataProvider<PickerMedia> wrap(PickerDataProvider<PickerVideo> provider) {
-            return new VideoProviderWrapper(provider);
-        }
-
-        @Override
-        public void request(Callback<PickerMedia> callback) {
-            delegate.request(new Callback<PickerVideo>() {
-                @Override
-                public void onNext(Collection<PickerVideo> data) {
-                    callback.onNext(
-                            Stream.of(data)
-                                    .map(PickerVideo::getSource)
-                                    .map(PickerMedia::video)
-                                    .toList());
-                }
-
-                @Override
-                public void onComplete() {
-                    callback.onComplete();
-                }
-
-                @Override
-                public void onError(Throwable throwable) {
-                    callback.onError(throwable);
-                }
-            });
-        }
     }
 }

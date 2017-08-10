@@ -8,11 +8,11 @@ import com.dewarder.pickerkit.model.PickerMediaFolder;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.RequestCreator;
 
-public class CategoryPreviewFetcher implements PreviewFetcher<PickerMediaFolder> {
+public class PickerMediaFolderPreviewFetcher implements PreviewFetcher<PickerMediaFolder> {
 
     private final Picasso mPicasso;
 
-    public CategoryPreviewFetcher(Context context) {
+    public PickerMediaFolderPreviewFetcher(Context context) {
         mPicasso = new Picasso.Builder(context)
                 .addRequestHandler(new VideoRequestHandler())
                 .build();

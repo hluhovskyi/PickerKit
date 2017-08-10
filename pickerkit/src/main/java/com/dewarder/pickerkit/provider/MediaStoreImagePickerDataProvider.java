@@ -1,22 +1,29 @@
-package com.dewarder.pickerkit;
+package com.dewarder.pickerkit.provider;
 
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.provider.MediaStore;
 
+import com.annimon.stream.Stream;
 import com.dewarder.pickerkit.model.PickerImage;
+import com.dewarder.pickerkit.model.PickerMedia;
 import com.dewarder.pickerkit.utils.Queries;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 
 public final class MediaStoreImagePickerDataProvider implements PickerDataProvider<PickerImage> {
 
     private final ContentResolver mContentResolver;
 
-    public MediaStoreImagePickerDataProvider(Context context) {
+    private MediaStoreImagePickerDataProvider(Context context) {
         mContentResolver = context.getContentResolver();
+    }
+
+    public static MediaStoreImagePickerDataProvider of(Context context) {
+        return new MediaStoreImagePickerDataProvider(context);
     }
 
     @Override
@@ -39,4 +46,5 @@ public final class MediaStoreImagePickerDataProvider implements PickerDataProvid
         callback.onComplete();
         cursor.close();
     }
+
 }

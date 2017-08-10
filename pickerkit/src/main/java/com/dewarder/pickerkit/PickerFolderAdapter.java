@@ -12,7 +12,7 @@ import java.util.Collection;
 
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
-public class CategoryAdapter extends RecyclerView.Adapter<CategoryViewHolder> {
+public class PickerFolderAdapter extends RecyclerView.Adapter<PickerFolderViewHolder> {
 
     private final PreviewFetcher<PickerMediaFolder> mPreviewFetcher;
     private final ArrayList<PickerMediaFolder> mCategories = new ArrayList<>();
@@ -21,22 +21,22 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryViewHolder> {
     private PreviewFetcher.Params mPreviewParams = PreviewFetcher.Params.empty();
     private OnCategoryClickListener<PickerMediaFolder> mOnCategoryClickListener;
 
-    public CategoryAdapter(PreviewFetcher<PickerMediaFolder> previewFetcher) {
+    public PickerFolderAdapter(PreviewFetcher<PickerMediaFolder> previewFetcher) {
         mPreviewFetcher = previewFetcher;
     }
 
     @Override
-    public CategoryViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public PickerFolderViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         View view = inflater.inflate(R.layout.item_category, parent, false);
         ViewGroup.LayoutParams params = view.getLayoutParams();
         params.height = mCategoryItemSize;
         params.width = mCategoryItemSize;
-        return new CategoryViewHolder(view);
+        return new PickerFolderViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(CategoryViewHolder holder, int position) {
+    public void onBindViewHolder(PickerFolderViewHolder holder, int position) {
         PickerMediaFolder folder = mCategories.get(position);
         holder.setName(folder.getName());
         holder.setItemCount(folder.getItemCount());

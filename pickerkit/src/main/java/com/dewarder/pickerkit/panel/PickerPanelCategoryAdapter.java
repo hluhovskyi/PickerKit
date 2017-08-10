@@ -15,7 +15,7 @@ import java.util.List;
 public class PickerPanelCategoryAdapter extends RecyclerView.Adapter<PickerPanelCategoryViewHolder> {
 
     private final ArrayList<PickerCategory> mCategories = new ArrayList<>();
-    private OnAttachmentPanelCategoryClickListener mOnAttachmentPanelCategoryClickListener;
+    private OnPickerPanelCategoryClickListener mOnPickerPanelCategoryClickListener;
 
     @Override
     public PickerPanelCategoryViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -82,13 +82,13 @@ public class PickerPanelCategoryAdapter extends RecyclerView.Adapter<PickerPanel
         }
     }
 
-    public void setOnAttachmentPanelCategoryClickListener(OnAttachmentPanelCategoryClickListener listener) {
-        mOnAttachmentPanelCategoryClickListener = listener;
+    public void setOnAttachmentPanelCategoryClickListener(OnPickerPanelCategoryClickListener listener) {
+        mOnPickerPanelCategoryClickListener = listener;
     }
 
     private void notifyCategoryClicked(PickerCategory item) {
-        if (mOnAttachmentPanelCategoryClickListener != null) {
-            mOnAttachmentPanelCategoryClickListener.onPanelPickerClicked(item.getId());
+        if (mOnPickerPanelCategoryClickListener != null) {
+            mOnPickerPanelCategoryClickListener.onPickerCategoryClicked(item.getId());
         }
     }
 }

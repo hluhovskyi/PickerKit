@@ -1,4 +1,4 @@
-package com.dewarder.pickerkit;
+package com.dewarder.pickerkit.provider;
 
 import java.util.Collection;
 
