@@ -4,17 +4,13 @@ import android.app.Activity
 import android.app.Application
 import android.arch.lifecycle.Lifecycle
 import com.dewarder.pickerkit.core.*
-import java.io.Closeable
-import java.util.concurrent.ConcurrentHashMap
 
 internal class DefaultPickerKit(
         application: Application
 ) : PickerKit {
 
     private val activityRegistry = ActivityRegistry()
-
-    private val listeners = ConcurrentHashMap<Picker<*, *>, HashSet<Pair<OnPickerResultListener<*>>>()
-    private val allListeners
+    private val bus = Bus()
 
     init {
         application.registerActivityLifecycleCallbacks(activityRegistry)
@@ -32,23 +28,39 @@ internal class DefaultPickerKit(
 
     override fun provideResults(): ProviderResultBuilder = ProviderBuilder()
 
-    private inner class ListenerBuilder : ListenerResultBuilder {
+    internal class ListenerBuilder(
+            private val bus: Bus
+    ) : ListenerResultBuilder {
 
-        private val listenersAll = HashSet<OnPickerResultListener<*>>()
-        private val listeners = HashMap<Picker<*, *>, OnPickerResultListener<*>>()
+        private val listenersAll = HashSet<OnPickerResultListener<Result>>()
+        private val listenersByType = HashMap<Class<out Result>, HashSet<OnPickerResultListener<Result>>>()
 
         override fun <R : Result, L : OnPickerResultListener<R>> observe(
                 picker: Picker<*, R>,
                 listener: L
         ): ListenerResultBuilder = apply {
-            listeners[picker] = listener
+            val casted = listener as OnPickerResultListener<Result>
+
+            val listeners = listenersByType[picker.resultType]
+            if (listeners == null) {
+                listenersByType[picker.resultType] = hashSetOf(casted)
+            } else {
+                listeners += casted
+            }
         }
 
         override fun <R : Result> observe(
                 picker: Picker<*, R>,
                 listener: (R) -> Unit
         ): ListenerResultBuilder = apply {
-            listeners[picker] = OnPickerResultListener.create(listener)
+            val wrapped = OnPickerResultListener.create(listener) as OnPickerResultListener<Result>
+
+            val listeners = listenersByType[picker.resultType]
+            if (listeners == null) {
+                listenersByType[picker.resultType] = hashSetOf(wrapped)
+            } else {
+                listeners += wrapped
+            }
         }
 
         override fun observeAll(
@@ -69,12 +81,19 @@ internal class DefaultPickerKit(
         override fun attachToLifecycle(lifecycle: Lifecycle): ListenerResultBuilder = apply {
         }
 
-        override fun build(): Closeable {
+        override fun build(): PickerCloseable {
+            val listeners
 
+            bus.subscribeOnType(
+                    listeners = listenersByType
+            )
+            bus.subscribeOnAny(
+                    listeners = listenersAll
+            )
         }
     }
 
-    private inner class ProviderBuilder : ProviderResultBuilder {
+    internal class ProviderBuilder : ProviderResultBuilder {
 
     }
 }

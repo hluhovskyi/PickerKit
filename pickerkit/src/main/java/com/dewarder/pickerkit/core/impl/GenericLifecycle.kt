@@ -8,8 +8,5 @@ internal interface GenericLifecycle {
 
     companion object {
 
-
-
-        fun fromActivity
     }
 }

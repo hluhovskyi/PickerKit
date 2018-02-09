@@ -2,8 +2,6 @@ package com.dewarder.pickerkit.core
 
 import android.app.Activity
 import android.arch.lifecycle.Lifecycle
-import android.support.v4.app.Fragment
-import java.io.Closeable
 
 interface ListenerResultBuilder {
 
@@ -29,5 +27,5 @@ interface ListenerResultBuilder {
 
     fun attachToLifecycle(lifecycle: Lifecycle): ListenerResultBuilder
 
-    fun build(): Closeable
+    fun build(): PickerCloseable
 }
