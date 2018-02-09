@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
-import com.dewarder.pickerkit.provider.MediaStoreImagePickerDataProvider;
 import com.dewarder.pickerkit.activity.PickerKit;
 import com.dewarder.pickerkit.config.PanelPickerBuilder;
 import com.dewarder.pickerkit.panel.PickerCategories;
