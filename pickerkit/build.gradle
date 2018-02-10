@@ -16,12 +16,12 @@ group = 'com.dewarder'
 
 
 android {
-    compileSdkVersion 25
+    compileSdkVersion 27
     buildToolsVersion "25.0.3"
 
     defaultConfig {
         minSdkVersion 15
-        targetSdkVersion 25
+        targetSdkVersion 27
         versionCode 1
         versionName "1.0"
     }
@@ -78,7 +78,7 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:27.0.1'
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.github.rahatarmanahmed:circularprogressview:2.5.0'
-    compile 'com.sothree.slidinguppanel:library:3.3.1'
+    compile 'com.sothree.slidinguppanel:library:3.4.0'
 
     compile 'com.annimon:stream:1.1.7'
     testCompile 'junit:junit:4.12'

@@ -6,19 +6,19 @@ import com.dewarder.pickerkit.core.Result
 /**
  * Should be used on main thread only
  */
-internal class StickyOnPickerResultListenerDecorator<in R : Result>(
+internal class LifecycleOnPickerResultListenerDecorator<in R : Result>(
         val listener: OnPickerResultListener<R>
-) : GenericLifecycle, OnPickerResultListener<R> {
+) : LifecycleRegistry, OnPickerResultListener<R> {
 
     private var isResumed: Boolean = false
-    private var stickyValue: R? = null
+    private var result: R? = null
 
     override fun onResume() {
         isResumed = true
 
-        if (stickyValue != null) {
-            listener.onResult(stickyValue!!)
-            stickyValue = null
+        if (result != null) {
+            listener.onResult(result!!)
+            result = null
         }
     }
 
@@ -27,14 +27,14 @@ internal class StickyOnPickerResultListenerDecorator<in R : Result>(
     }
 
     override fun onResult(result: R) {
-        if (stickyValue != null) {
+        if (this.result != null) {
             throw IllegalStateException("You can't push more than one item")
         }
 
         if (isResumed) {
             listener.onResult(result)
         } else {
-            stickyValue = result
+            this.result = result
         }
     }
 }

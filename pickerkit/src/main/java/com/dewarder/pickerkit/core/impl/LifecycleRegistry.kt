@@ -1,6 +1,6 @@
 package com.dewarder.pickerkit.core.impl
 
-internal interface GenericLifecycle {
+internal interface LifecycleRegistry {
 
     fun onResume()
 

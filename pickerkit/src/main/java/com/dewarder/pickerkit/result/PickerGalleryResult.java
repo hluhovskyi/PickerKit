@@ -1,11 +1,14 @@
 package com.dewarder.pickerkit.result;
 
+import com.dewarder.pickerkit.core.Result;
 import com.dewarder.pickerkit.model.PickerMedia;
 import com.dewarder.pickerkit.model.PickerMediaType;
 
 import java.util.EnumSet;
 
-public interface PickerGalleryResult extends PickerBaseMediaResult<PickerMedia> {
+public interface PickerGalleryResult extends
+        PickerBaseMediaResult<PickerMedia>,
+        Result {
 
     PickerImageResult getImageResult();
 

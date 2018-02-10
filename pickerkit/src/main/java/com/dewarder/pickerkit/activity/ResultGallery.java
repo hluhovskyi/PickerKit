@@ -13,7 +13,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 
-class ResultGallery implements PickerGalleryResult {
+public class ResultGallery implements PickerGalleryResult {
 
     private final List<PickerMedia> selected;
     private final List<PickerMedia> unselected;

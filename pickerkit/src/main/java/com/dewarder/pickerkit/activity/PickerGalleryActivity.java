@@ -15,9 +15,9 @@ import android.view.MenuItem;
 
 import com.annimon.stream.Stream;
 import com.dewarder.pickerkit.GridSpacingItemDecoration;
-import com.dewarder.pickerkit.PickerPreviewFetcher;
 import com.dewarder.pickerkit.PickerItemAdapter;
 import com.dewarder.pickerkit.PickerPanelView;
+import com.dewarder.pickerkit.PickerPreviewFetcher;
 import com.dewarder.pickerkit.PreviewFetcher;
 import com.dewarder.pickerkit.R;
 import com.dewarder.pickerkit.RequestCodeGenerator;
@@ -200,6 +200,12 @@ public final class PickerGalleryActivity extends AppCompatActivity implements
         Intent intent = new Intent();
         intent.putExtra(EXTRA_RESULT, result);
         setResult(RESULT_OK, intent);
+
+        com.dewarder.pickerkit.core.PickerKit.Companion.getInstance()
+                .provideResults()
+                .push(result)
+                .commit();
+
         finish();
     }
 
