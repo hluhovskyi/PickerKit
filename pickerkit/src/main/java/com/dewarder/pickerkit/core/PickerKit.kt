@@ -5,9 +5,11 @@ import com.dewarder.pickerkit.core.impl.DefaultPickerKit
 
 interface PickerKit {
 
-    fun <S : PickerStarter> openPicker(key: Picker<S, *>): S
+    fun <S : PickerStarter> openPicker(picker: Picker<S, *>): S
 
-    fun openChooser(): ChooserStarter
+    fun <C : ChooserStarter> openChooser(
+            chooser: Chooser<C>
+    ): C
 
     fun listenResults(): ListenerResultBuilder
 

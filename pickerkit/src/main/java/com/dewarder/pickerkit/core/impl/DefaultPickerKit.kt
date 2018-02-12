@@ -14,13 +14,13 @@ internal class DefaultPickerKit(
         application.registerActivityLifecycleCallbacks(activityRegistry)
     }
 
-    override fun <S : PickerStarter> openPicker(key: Picker<S, *>): S {
-        return key.provideStarter(context = activityRegistry.getCurrentActivity())
+    override fun <S : PickerStarter> openPicker(picker: Picker<S, *>): S {
+        return picker.provideStarter(context = activityRegistry.getCurrentActivity())
     }
 
-    override fun openChooser(): ChooserStarter = DefaultChooserStarter(
-            activity = activityRegistry.getCurrentActivity()
-    )
+    override fun <C : ChooserStarter> openChooser(chooser: Chooser<C>): C {
+        return chooser.provideStarter(context = activityRegistry.getCurrentActivity())
+    }
 
     override fun listenResults(): ListenerResultBuilder =
             ListenerBuilder(

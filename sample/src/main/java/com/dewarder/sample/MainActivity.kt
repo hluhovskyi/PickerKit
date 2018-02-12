@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.widget.Toast
 import com.dewarder.pickerkit.ImagePicker
+import com.dewarder.pickerkit.chooser.DefaultChooser
 import com.dewarder.pickerkit.core.PickerKit
 import com.dewarder.pickerkit.result.PickerGalleryResult
 
@@ -14,7 +15,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         PickerKit.getInstance()
-                .openPicker(ImagePicker)
+                .openChooser(DefaultChooser)
                 .start()
 
         PickerKit.getInstance()
