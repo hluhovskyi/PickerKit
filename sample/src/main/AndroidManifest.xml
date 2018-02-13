@@ -27,7 +27,7 @@
         <activity android:name="com.dewarder.pickerkit.activity.PickerGalleryActivity"/>
 
         <activity
-            android:name="com.dewarder.pickerkit.activity.PanelPickerActivity"
+            android:name="com.dewarder.pickerkit.activity.GalleryPickerActivity"
             android:theme="@style/PickerActivityTransparentTheme"/>
 
     </application>

@@ -10,13 +10,17 @@ internal class Bus {
     private val listenersByType = ConcurrentHashMap<Class<out Result>, HashSet<OnPickerResultListener<Result>>>()
     private val listenersAny = HashSet<OnPickerResultListener<Result>>()
 
-    //TODO: exception text
     fun post(result: Result) {
         checkMainThread()
-        val listeners = listenersByType.getOrElse(
-                key = result::class.java,
-                defaultValue = { throw IllegalStateException() }
-        )
+
+        val resultClass = result::class.java
+        val listeners = listenersByType.filterKeys { it.isAssignableFrom(resultClass) }
+                .values
+                .flatten()
+
+        if (listeners.isEmpty() && listenersAny.isEmpty()) {
+            throw IllegalStateException("No listeners corresponding to result ${resultClass.simpleName}")
+        }
 
         listeners.forEach { listener ->
             listener.onResult(result)

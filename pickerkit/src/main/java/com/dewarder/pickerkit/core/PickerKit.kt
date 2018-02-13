@@ -1,6 +1,8 @@
 package com.dewarder.pickerkit.core
 
 import android.app.Application
+import com.dewarder.pickerkit.core.impl.ActivityRegistry
+import com.dewarder.pickerkit.core.impl.Bus
 import com.dewarder.pickerkit.core.impl.DefaultPickerKit
 
 interface PickerKit {
@@ -23,7 +25,9 @@ interface PickerKit {
 
         fun init(application: Application) {
             current = DefaultPickerKit(
-                    application = application
+                    application = application,
+                    activityRegistry = ActivityRegistry(),
+                    bus = Bus()
             )
         }
 

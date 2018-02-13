@@ -26,10 +26,6 @@ public final class Activities {
         return (T) extras.getSerializable(key);
     }
 
-    public static <T extends View> T view(Activity activity, @IdRes int id) {
-        return (T) activity.findViewById(id);
-    }
-
     public static Bundle getExtras(Activity activity) {
         Intent intent = activity.getIntent();
         if (intent == null) {

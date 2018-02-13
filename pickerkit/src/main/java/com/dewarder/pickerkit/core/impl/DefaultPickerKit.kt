@@ -4,23 +4,20 @@ import android.app.Application
 import com.dewarder.pickerkit.core.*
 
 internal class DefaultPickerKit(
-        application: Application
+        application: Application,
+        private val activityRegistry: ActivityRegistry,
+        private val bus: Bus
 ) : PickerKit {
-
-    private val activityRegistry = ActivityRegistry()
-    private val bus = Bus()
 
     init {
         application.registerActivityLifecycleCallbacks(activityRegistry)
     }
 
-    override fun <S : PickerStarter> openPicker(picker: Picker<S, *>): S {
-        return picker.provideStarter(context = activityRegistry.getCurrentActivity())
-    }
+    override fun <S : PickerStarter> openPicker(picker: Picker<S, *>): S =
+            picker.provideStarter(context = activityRegistry.getCurrentActivity())
 
-    override fun <C : ChooserStarter> openChooser(chooser: Chooser<C>): C {
-        return chooser.provideStarter(context = activityRegistry.getCurrentActivity())
-    }
+    override fun <C : ChooserStarter> openChooser(chooser: Chooser<C>): C =
+            chooser.provideStarter(context = activityRegistry.getCurrentActivity())
 
     override fun listenResults(): ListenerResultBuilder =
             ListenerBuilder(
@@ -29,9 +26,7 @@ internal class DefaultPickerKit(
             )
 
     override fun provideResults(): ProviderResultBuilder =
-            ProviderBuilder(
-                    bus = bus
-            )
+            ProviderBuilder(bus = bus)
 
     internal class ProviderBuilder(
             val bus: Bus
