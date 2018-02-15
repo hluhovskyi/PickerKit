@@ -1,6 +1,5 @@
 package com.dewarder.pickerkit
 
-import android.app.Activity
 import android.content.Context
 import com.dewarder.pickerkit.activity.PickerGalleryFolderActivity
 import com.dewarder.pickerkit.core.Picker
@@ -16,10 +15,12 @@ object ImagePicker : Picker<ImagePickerStarter, PickerGalleryResult> {
 }
 
 class ImagePickerStarter(
-        val context: Context
+        private val context: Context
 ) : PickerStarter {
 
     override fun start() {
-        PickerGalleryFolderActivity.open(context as Activity)
+        PickerGalleryFolderActivity.Starter(context)
+                .setGalleryLimit(10)
+                .start()
     }
 }

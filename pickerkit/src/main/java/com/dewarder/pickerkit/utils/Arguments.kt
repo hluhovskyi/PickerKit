@@ -6,22 +6,41 @@ import android.os.Parcelable
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
-fun <T : Parcelable> Activity.argument(
+inline fun <reified T> Activity.argument(
         key: String? = null,
         default: T? = null
 ): ReadOnlyProperty<Activity, T> =
         Lazy { property ->
             val realKey = key ?: property.name
-            intent?.getParcelableExtra(realKey)
+            intent?.getArgument<T>(realKey)
                     ?: default
                     ?: throw IllegalStateException("Argument for key `$realKey` is absent. Pass value or set `default` one")
         }
 
-fun Intent.putArgument(property: KProperty<*>, extra: Parcelable): Intent =
-        this.putExtra(property.name, extra)
+fun Intent.putArgument(property: KProperty<*>, extra: Any): Intent = apply {
+    val key = property.name
+    when (extra) {
+        is Parcelable -> putExtra(key, extra)
+        is Int -> putExtra(key, extra)
+        is String -> putExtra(key, extra)
+        is ArrayList<*> -> putExtra(key, extra)
+        else -> throw IllegalStateException("Unsupported argument type `${extra::class.java.simpleName}`")
+    }
+}
 
-private class Lazy<out T : Parcelable>(
-        val init: (KProperty<*>) -> T
+inline fun <reified T> Intent.getArgument(key: String): T {
+    val target = T::class.java
+    return when {
+        Parcelable::class.java.isAssignableFrom(target) -> getParcelableExtra<Parcelable>(key) as T
+        Int::class.java.isAssignableFrom(target) -> getIntExtra(key, -1) as T
+        String::class.java.isAssignableFrom(target) -> getStringExtra(key) as T
+        ArrayList::class.java.isAssignableFrom(target) -> getSerializableExtra(key) as T
+        else -> throw IllegalStateException("Unsupported argument type ${target.simpleName}")
+    }
+}
+
+class Lazy<out T>(
+        private val init: (KProperty<*>) -> T
 ) : ReadOnlyProperty<Any, T> {
 
     private object EMPTY

@@ -17,9 +17,13 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         findViewById<View>(R.id.opener).setOnClickListener {
-            PickerKit.getInstance()
+/*            PickerKit.getInstance()
                     .openChooser(DefaultChooser)
                     .revealPoint(ImmutablePoint(500, 500))
+                    .start()*/
+
+            PickerKit.getInstance()
+                    .openPicker(ImagePicker)
                     .start()
         }
 
