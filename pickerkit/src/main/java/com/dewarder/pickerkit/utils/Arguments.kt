@@ -24,7 +24,7 @@ fun Intent.putArgument(property: KProperty<*>, extra: Any): Intent = apply {
         is Int -> putExtra(key, extra)
         is String -> putExtra(key, extra)
         is ArrayList<*> -> putExtra(key, extra)
-        else -> throw IllegalStateException("Unsupported argument type `${extra::class.java.simpleName}`")
+        else -> throw IllegalStateException("Unsupported argument type `${extra::class.java.simpleName}` for key $key")
     }
 }
 
@@ -32,10 +32,10 @@ inline fun <reified T> Intent.getArgument(key: String): T {
     val target = T::class.java
     return when {
         Parcelable::class.java.isAssignableFrom(target) -> getParcelableExtra<Parcelable>(key) as T
-        Int::class.java.isAssignableFrom(target) -> getIntExtra(key, -1) as T
+        Integer::class.java.isAssignableFrom(target) -> getIntExtra(key, -1) as T
         String::class.java.isAssignableFrom(target) -> getStringExtra(key) as T
         ArrayList::class.java.isAssignableFrom(target) -> getSerializableExtra(key) as T
-        else -> throw IllegalStateException("Unsupported argument type ${target.simpleName}")
+        else -> throw IllegalStateException("Unsupported argument type ${target.simpleName} for key $key")
     }
 }
 

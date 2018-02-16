@@ -251,7 +251,6 @@ class PickerGalleryFolderActivity : AppCompatActivity(), OnCategoryClickListener
         }
 
         fun start() {
-            val intent = Intent(context, PickerGalleryFolderActivity::class.java)
             context.startActivity(intent)
         }
     }

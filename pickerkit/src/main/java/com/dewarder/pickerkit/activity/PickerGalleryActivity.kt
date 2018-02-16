@@ -26,7 +26,6 @@ class PickerGalleryActivity : AppCompatActivity(),
         PickerItemAdapter.AccessibilityController<PickerMedia> {
 
     private val mInitialPicked = HashSet<PickerMedia>()
-    private val mPickedImages = HashSet<PickerMedia>()
 
     private lateinit var recycler: RecyclerView
     private var mPickerLayoutManager: GridLayoutManager? = null
@@ -40,16 +39,17 @@ class PickerGalleryActivity : AppCompatActivity(),
     private val title: String by argument()
     private val totalSelected: Int by argument()
     private val limit: Int by argument()
+
     private val data: ArrayList<PickerMedia> by argument()
     private val selected: ArrayList<PickerMedia> by argument()
 
     private var totalPicked: Int = 0
 
     private val checked: List<PickerMedia>
-        get() = mPickedImages.filterNot(mInitialPicked::contains)
+        get() = selected.filterNot(mInitialPicked::contains)
 
     private val unchecked: List<PickerMedia>
-        get() = data.filterNot(mPickedImages::contains)
+        get() = data.filterNot(selected::contains)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.PickerActivityTheme)
@@ -59,14 +59,14 @@ class PickerGalleryActivity : AppCompatActivity(),
         mItemMinSize = resources.getDimensionPixelSize(R.dimen.item_picker_image_min_size)
         mItemSpacing = resources.getDimensionPixelSize(R.dimen.spacing_default)
 
-        mPickedImages.addAll(mInitialPicked)
+        mInitialPicked.addAll(selected)
 
         setSupportActionBar(findViewById(R.id.toolbar))
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         supportActionBar!!.title = title
 
         panel = findViewById(R.id.picker_panel)
-        panel.setAccentColor(ContextCompat.getColor(this, accentColor))
+        //TODO: panel.setAccentColor(ContextCompat.getColor(this, accentColor))
         panel.setOnSubmitClickListener(this)
         panel.setOnCancelClickListener(this)
         panel.setPickedCount(totalPicked)
@@ -90,28 +90,26 @@ class PickerGalleryActivity : AppCompatActivity(),
         }
     }
 
-    override fun getPicked(): List<PickerMedia> {
-        return ArrayList(mPickedImages)
-    }
+    override fun getPicked(): List<PickerMedia> = selected.toList()
 
-    override fun isPicked(item: PickerMedia): Boolean {
-        return mPickedImages.contains(item)
-    }
+    override fun isPicked(item: PickerMedia): Boolean = item in selected
 
     override fun onPick(item: PickerMedia) {
         totalPicked++
         panel.setPickedCount(totalPicked)
-        mPickedImages.add(item)
+
+        selected += item
     }
 
     override fun onUnpick(item: PickerMedia) {
         totalPicked--
         panel.setPickedCount(totalPicked)
-        mPickedImages.remove(item)
+
+        selected -= item
     }
 
     override fun clearPicked() {
-        mPickedImages.clear()
+        selected.clear()
     }
 
     override fun canPickMore(items: Collection<PickerMedia>): Boolean {
@@ -185,7 +183,6 @@ class PickerGalleryActivity : AppCompatActivity(),
         }
 
         fun start() {
-            val intent = Intent(activity, PickerGalleryActivity::class.java)
             val code = if (requestCode == -1) RequestCodeGenerator.generate() else requestCode
             activity.startActivityForResult(intent, code)
         }
