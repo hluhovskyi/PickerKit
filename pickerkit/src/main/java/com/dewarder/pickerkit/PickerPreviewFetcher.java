@@ -3,7 +3,7 @@ package com.dewarder.pickerkit;
 import android.content.Context;
 import android.widget.ImageView;
 
-import com.dewarder.pickerkit.model.PickerMedia;
+import com.dewarder.pickerkit.gallery.model.PickerMedia;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.RequestCreator;
 

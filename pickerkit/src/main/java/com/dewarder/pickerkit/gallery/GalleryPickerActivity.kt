@@ -1,4 +1,4 @@
-package com.dewarder.pickerkit.activity
+package com.dewarder.pickerkit.gallery
 
 import android.content.Context
 import android.content.Intent
@@ -11,8 +11,8 @@ import com.dewarder.pickerkit.ImmutablePoint
 import com.dewarder.pickerkit.R
 import com.dewarder.pickerkit.chooser.DefaultChooserStarter
 import com.dewarder.pickerkit.core.Picker
-import com.dewarder.pickerkit.model.PickerImage
-import com.dewarder.pickerkit.model.PickerMedia
+import com.dewarder.pickerkit.gallery.model.PickerImage
+import com.dewarder.pickerkit.gallery.model.PickerMedia
 import com.dewarder.pickerkit.panel.OnPickerPanelCategoryClickListener
 import com.dewarder.pickerkit.panel.PickerCategories
 import com.dewarder.pickerkit.panel.PickerPanelView

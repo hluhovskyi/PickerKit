@@ -1,7 +1,7 @@
-package com.dewarder.pickerkit.activity
+package com.dewarder.pickerkit.gallery.results
 
-import com.dewarder.pickerkit.model.PickerMedia
-import com.dewarder.pickerkit.model.PickerMediaType
+import com.dewarder.pickerkit.gallery.model.PickerMedia
+import com.dewarder.pickerkit.gallery.model.PickerMediaType
 import com.dewarder.pickerkit.result.PickerGalleryResult
 import com.dewarder.pickerkit.result.PickerImageResult
 import com.dewarder.pickerkit.result.PickerVideoResult
@@ -15,6 +15,9 @@ data class ResultGallery(
         override val isSubmitted: Boolean,
         override val isCanceled: Boolean
 ) : PickerGalleryResult {
+
+    override val types: EnumSet<PickerMediaType>
+        get() = EnumSet.noneOf(PickerMediaType::class.java)
 
     override fun getImageResult(): PickerImageResult =
             ResultImage(
@@ -32,9 +35,7 @@ data class ResultGallery(
                     isCanceled
             )
 
-    override fun getTypes(): EnumSet<PickerMediaType>? = null
-
-    override fun containsType(type: PickerMediaType): Boolean = false
+    override operator fun contains(type: PickerMediaType): Boolean = type in types
 
     companion object {
 

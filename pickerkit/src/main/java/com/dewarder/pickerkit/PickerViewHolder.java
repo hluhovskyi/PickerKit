@@ -12,8 +12,8 @@ public class PickerViewHolder extends ItemPickerViewHolder {
 
     public PickerViewHolder(View view) {
         super(view);
-        mPreview = (ImageView) view.findViewById(R.id.item_picker_image_preview);
-        mCheckBox = (CheckBox) view.findViewById(R.id.item_picker_check_box);
+        mPreview = view.findViewById(R.id.item_picker_image_preview);
+        mCheckBox = view.findViewById(R.id.item_picker_check_box);
     }
 
     @Override

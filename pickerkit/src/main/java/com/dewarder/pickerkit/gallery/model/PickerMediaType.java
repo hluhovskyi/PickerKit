@@ -1,4 +1,4 @@
-package com.dewarder.pickerkit.model;
+package com.dewarder.pickerkit.gallery.model;
 
 public enum PickerMediaType {
     IMAGE, VIDEO

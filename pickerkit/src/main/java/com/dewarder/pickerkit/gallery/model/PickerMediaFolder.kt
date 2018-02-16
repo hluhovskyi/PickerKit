@@ -1,4 +1,4 @@
-package com.dewarder.pickerkit.model
+package com.dewarder.pickerkit.gallery.model
 
 import android.net.Uri
 import android.os.Parcelable

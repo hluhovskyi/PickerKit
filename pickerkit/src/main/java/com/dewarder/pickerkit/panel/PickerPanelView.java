@@ -21,7 +21,7 @@ import com.dewarder.pickerkit.PickerPreviewFetcher;
 import com.dewarder.pickerkit.R;
 import com.dewarder.pickerkit.SimpleDataController;
 import com.dewarder.pickerkit.SpaceItemDecoration;
-import com.dewarder.pickerkit.model.PickerMedia;
+import com.dewarder.pickerkit.gallery.model.PickerMedia;
 
 import java.util.ArrayList;
 import java.util.Arrays;

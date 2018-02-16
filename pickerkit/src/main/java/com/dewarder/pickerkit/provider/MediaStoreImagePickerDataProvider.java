@@ -5,14 +5,11 @@ import android.content.Context;
 import android.database.Cursor;
 import android.provider.MediaStore;
 
-import com.annimon.stream.Stream;
-import com.dewarder.pickerkit.model.PickerImage;
-import com.dewarder.pickerkit.model.PickerMedia;
+import com.dewarder.pickerkit.gallery.model.PickerImage;
 import com.dewarder.pickerkit.utils.Queries;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collection;
 
 public final class MediaStoreImagePickerDataProvider implements PickerDataProvider<PickerImage> {
 
@@ -27,7 +24,7 @@ public final class MediaStoreImagePickerDataProvider implements PickerDataProvid
     }
 
     @Override
-    public void request(Callback<PickerImage> callback) {
+    public void request(Callback<? super PickerImage> callback) {
         Cursor cursor = Queries.newBuilder(mContentResolver)
                 .uri(MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
                 .projection(MediaStore.Images.Media._ID, MediaStore.Images.Media.DATE_TAKEN, MediaStore.Images.Media.DATA)

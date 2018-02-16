@@ -5,8 +5,6 @@ import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.widget.Toast
 import com.dewarder.pickerkit.ImagePicker
-import com.dewarder.pickerkit.ImmutablePoint
-import com.dewarder.pickerkit.chooser.DefaultChooser
 import com.dewarder.pickerkit.core.PickerKit
 import com.dewarder.pickerkit.result.PickerGalleryResult
 
@@ -17,10 +15,10 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         findViewById<View>(R.id.opener).setOnClickListener {
-/*            PickerKit.getInstance()
-                    .openChooser(DefaultChooser)
-                    .revealPoint(ImmutablePoint(500, 500))
-                    .start()*/
+            /*            PickerKit.getInstance()
+                                .openChooser(DefaultChooser)
+                                .revealPoint(ImmutablePoint(500, 500))
+                                .start()*/
 
             PickerKit.getInstance()
                     .openPicker(ImagePicker)
@@ -32,7 +30,7 @@ class MainActivity : AppCompatActivity() {
                 .listenResults()
                 .observe<PickerGalleryResult>(ImagePicker, { result ->
                     Toast.makeText(this,
-                            result.imageResult.selected.map { it.source }.joinToString(", "),
+                            result.getImageResult().selected.map { it.source }.joinToString(", "),
                             Toast.LENGTH_LONG
                     ).show()
                 })

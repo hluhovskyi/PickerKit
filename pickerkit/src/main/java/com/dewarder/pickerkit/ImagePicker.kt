@@ -1,7 +1,7 @@
 package com.dewarder.pickerkit
 
 import android.content.Context
-import com.dewarder.pickerkit.activity.PickerGalleryFolderActivity
+import com.dewarder.pickerkit.gallery.PickerGalleryFolderActivity
 import com.dewarder.pickerkit.core.Picker
 import com.dewarder.pickerkit.core.PickerStarter
 import com.dewarder.pickerkit.result.PickerGalleryResult

@@ -1,6 +1,6 @@
-package com.dewarder.pickerkit.activity
+package com.dewarder.pickerkit.gallery.results
 
-import com.dewarder.pickerkit.model.PickerImage
+import com.dewarder.pickerkit.gallery.model.PickerImage
 import com.dewarder.pickerkit.result.PickerImageResult
 import kotlinx.android.parcel.Parcelize
 

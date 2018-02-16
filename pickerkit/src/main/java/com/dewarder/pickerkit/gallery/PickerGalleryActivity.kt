@@ -1,4 +1,4 @@
-package com.dewarder.pickerkit.activity
+package com.dewarder.pickerkit.gallery
 
 import android.app.Activity
 import android.content.Intent
@@ -9,8 +9,9 @@ import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.MenuItem
 import com.dewarder.pickerkit.*
+import com.dewarder.pickerkit.gallery.results.ResultGallery
 import com.dewarder.pickerkit.core.PickerKit
-import com.dewarder.pickerkit.model.PickerMedia
+import com.dewarder.pickerkit.gallery.model.PickerMedia
 import com.dewarder.pickerkit.result.PickerGalleryResult
 import com.dewarder.pickerkit.utils.Recyclers
 import com.dewarder.pickerkit.utils.argument

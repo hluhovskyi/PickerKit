@@ -1,4 +1,4 @@
-package com.dewarder.pickerkit.activity
+package com.dewarder.pickerkit.gallery
 
 import android.app.Activity
 import android.content.Context
@@ -13,13 +13,13 @@ import android.view.Gravity
 import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
-import com.annimon.stream.Stream
 import com.dewarder.pickerkit.*
 import com.dewarder.pickerkit.core.PickerKit
-import com.dewarder.pickerkit.model.PickerImage
-import com.dewarder.pickerkit.model.PickerMedia
-import com.dewarder.pickerkit.model.PickerMediaFolder
-import com.dewarder.pickerkit.model.PickerVideo
+import com.dewarder.pickerkit.gallery.model.PickerImage
+import com.dewarder.pickerkit.gallery.model.PickerMedia
+import com.dewarder.pickerkit.gallery.model.PickerMediaFolder
+import com.dewarder.pickerkit.gallery.model.PickerVideo
+import com.dewarder.pickerkit.gallery.results.ResultGallery
 import com.dewarder.pickerkit.provider.MediaStoreImagePickerDataProvider
 import com.dewarder.pickerkit.provider.MediaStoreVideoPickerDataProvider
 import com.dewarder.pickerkit.provider.PickerDataProvider
@@ -138,9 +138,8 @@ class PickerGalleryFolderActivity : AppCompatActivity(), OnCategoryClickListener
     }
 
     override fun onCategoryClicked(category: PickerMediaFolder) {
-        val pickedPart = Stream.of(selected)
-                .filter { f -> category.children.contains(f) }
-                .toList()
+        val pickedPart = selected
+                .filter { media -> media in category.children }
 
         PickerGalleryActivity.Starter(this)
                 .setRequestCode(IMAGE_PICKER_ACTIVITY_REQUEST_CODE)

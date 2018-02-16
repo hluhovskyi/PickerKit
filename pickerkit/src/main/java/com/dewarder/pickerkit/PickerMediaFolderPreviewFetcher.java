@@ -4,7 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.widget.ImageView;
 
-import com.dewarder.pickerkit.model.PickerMediaFolder;
+import com.dewarder.pickerkit.gallery.model.PickerMediaFolder;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.RequestCreator;
 
