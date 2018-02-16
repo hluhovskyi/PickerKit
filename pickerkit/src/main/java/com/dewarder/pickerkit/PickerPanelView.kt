@@ -17,14 +17,14 @@ import android.widget.TextView
 
 class PickerPanelView : FrameLayout {
 
-    private var mCancel: TextView? = null
-    private var mSubmitContainer: LinearLayout? = null
-    private var mCounter: TextView? = null
-    private var mSubmitLabel: TextView? = null
+    private lateinit var cancel: TextView
+    private lateinit var submitContainer: LinearLayout
+    private lateinit var counter: TextView
+    private lateinit var submitLabel: TextView
 
-    private var mOnCancelClickListener: OnCancelClickListener? = null
-    private var mOnSubmitClickListener: OnSubmitClickListener? = null
-    private var mOnCounterClickListener: OnCounterClickListener? = null
+    private var onCancelClickListener: OnCancelClickListener? = null
+    private var onSubmitClickListener: OnSubmitClickListener? = null
+    private var onCounterClickListener: OnCounterClickListener? = null
 
     interface OnCancelClickListener {
 
@@ -45,22 +45,28 @@ class PickerPanelView : FrameLayout {
         init()
     }
 
-    constructor(context: Context,
-                attrs: AttributeSet?) : super(context, attrs) {
+    constructor(
+            context: Context,
+            attrs: AttributeSet?
+    ) : super(context, attrs) {
         init()
     }
 
-    constructor(context: Context,
-                attrs: AttributeSet?,
-                @AttrRes defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
+    constructor(
+            context: Context,
+            attrs: AttributeSet?,
+            @AttrRes defStyleAttr: Int
+    ) : super(context, attrs, defStyleAttr) {
         init()
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    constructor(context: Context,
-                attrs: AttributeSet?,
-                @AttrRes defStyleAttr: Int,
-                @StyleRes defStyleRes: Int) : super(context, attrs, defStyleAttr, defStyleRes) {
+    constructor(
+            context: Context,
+            attrs: AttributeSet?,
+            @AttrRes defStyleAttr: Int,
+            @StyleRes defStyleRes: Int
+    ) : super(context, attrs, defStyleAttr, defStyleRes) {
         init()
     }
 
@@ -70,59 +76,57 @@ class PickerPanelView : FrameLayout {
         setBackgroundColor(Color.parseColor("#1a1a1a"))
         setPadding(48, 0, 48, 0)
 
-        mCancel = findViewById(R.id.picker_panel_cancel)
-        mCancel!!.setOnClickListener { notifyOnCancelClicked() }
-        mSubmitContainer = findViewById(R.id.picker_panel_submit_container)
-        mCounter = findViewById(R.id.picker_panel_counter)
-        mCounter!!.setOnClickListener { v -> notifyOnCounterClicked() }
-        mSubmitLabel = findViewById(R.id.picker_panel_submit_label)
-        mSubmitLabel!!.setOnClickListener { v -> notifyOnSubmitClicked() }
+        cancel = findViewById(R.id.picker_panel_cancel)
+        cancel.setOnClickListener { notifyOnCancelClicked() }
+
+        submitContainer = findViewById(R.id.picker_panel_submit_container)
+
+        counter = findViewById(R.id.picker_panel_counter)
+        counter.setOnClickListener { notifyOnCounterClicked() }
+
+        submitLabel = findViewById(R.id.picker_panel_submit_label)
+        submitLabel.setOnClickListener { notifyOnSubmitClicked() }
+
         setPickedCount(0)
     }
 
     fun setAccentColor(@ColorInt color: Int) {
-        val drawable = mCounter!!.background as GradientDrawable
+        val drawable = counter.background as GradientDrawable
         drawable.setColor(color)
     }
 
     fun setPickedCount(count: Int) {
         if (count > 0) {
-            mCounter!!.text = count.toString()
-            mCounter!!.visibility = View.VISIBLE
-            mSubmitLabel!!.setTextColor(Color.WHITE)
+            counter.text = count.toString()
+            counter.visibility = View.VISIBLE
+            submitLabel.setTextColor(Color.WHITE)
         } else {
-            mCounter!!.visibility = View.GONE
-            mSubmitLabel!!.setTextColor(Color.parseColor("#838383"))
+            counter.visibility = View.GONE
+            submitLabel.setTextColor(Color.parseColor("#838383"))
         }
     }
 
     fun setOnSubmitClickListener(listener: OnSubmitClickListener) {
-        mOnSubmitClickListener = listener
+        onSubmitClickListener = listener
     }
 
     fun setOnCancelClickListener(listener: OnCancelClickListener) {
-        mOnCancelClickListener = listener
+        onCancelClickListener = listener
     }
 
     fun setOnCounterClickListener(listener: OnCounterClickListener) {
-        mOnCounterClickListener = listener
+        onCounterClickListener = listener
     }
 
     private fun notifyOnCancelClicked() {
-        if (mOnCancelClickListener != null) {
-            mOnCancelClickListener!!.onCancelClicked()
-        }
+        onCancelClickListener?.onCancelClicked()
     }
 
     private fun notifyOnCounterClicked() {
-        if (mOnCounterClickListener != null) {
-            mOnCounterClickListener!!.onCounterClicked()
-        }
+        onCounterClickListener?.onCounterClicked()
     }
 
     private fun notifyOnSubmitClicked() {
-        if (mOnSubmitClickListener != null) {
-            mOnSubmitClickListener!!.onSubmitClicked()
-        }
+        onSubmitClickListener?.onSubmitClicked()
     }
 }
