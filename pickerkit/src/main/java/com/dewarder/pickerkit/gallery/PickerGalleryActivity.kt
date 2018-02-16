@@ -9,12 +9,13 @@ import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.MenuItem
 import com.dewarder.pickerkit.*
-import com.dewarder.pickerkit.gallery.results.ResultGallery
 import com.dewarder.pickerkit.core.PickerKit
 import com.dewarder.pickerkit.gallery.model.PickerMedia
+import com.dewarder.pickerkit.gallery.results.ResultGallery
 import com.dewarder.pickerkit.result.PickerGalleryResult
 import com.dewarder.pickerkit.utils.Recyclers
 import com.dewarder.pickerkit.utils.argument
+import com.dewarder.pickerkit.utils.argumentMutable
 import com.dewarder.pickerkit.utils.putArgument
 import java.util.*
 import kotlin.collections.ArrayList
@@ -25,11 +26,9 @@ class PickerGalleryActivity : AppCompatActivity(),
         PickerItemAdapter.DataController<PickerMedia>,
         PickerItemAdapter.AccessibilityController<PickerMedia> {
 
-    private val mInitialPicked = HashSet<PickerMedia>()
+    private val initialPicked = HashSet<PickerMedia>()
 
     private lateinit var recycler: RecyclerView
-    private var mPickerLayoutManager: GridLayoutManager? = null
-
     private lateinit var panel: PickerPanelView
 
     private var mItemMinSize: Int = 0
@@ -37,16 +36,15 @@ class PickerGalleryActivity : AppCompatActivity(),
 
     private val accentColor: Int by argument()
     private val title: String by argument()
-    private val totalSelected: Int by argument()
     private val limit: Int by argument()
 
     private val data: ArrayList<PickerMedia> by argument()
     private val selected: ArrayList<PickerMedia> by argument()
 
-    private var totalPicked: Int = 0
+    private var totalSelected: Int by argumentMutable()
 
     private val checked: List<PickerMedia>
-        get() = selected.filterNot(mInitialPicked::contains)
+        get() = selected.filterNot(initialPicked::contains)
 
     private val unchecked: List<PickerMedia>
         get() = data.filterNot(selected::contains)
@@ -59,7 +57,7 @@ class PickerGalleryActivity : AppCompatActivity(),
         mItemMinSize = resources.getDimensionPixelSize(R.dimen.item_picker_image_min_size)
         mItemSpacing = resources.getDimensionPixelSize(R.dimen.spacing_default)
 
-        mInitialPicked.addAll(selected)
+        initialPicked += selected
 
         setSupportActionBar(findViewById(R.id.toolbar))
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
@@ -69,13 +67,14 @@ class PickerGalleryActivity : AppCompatActivity(),
         //TODO: panel.setAccentColor(ContextCompat.getColor(this, accentColor))
         panel.setOnSubmitClickListener(this)
         panel.setOnCancelClickListener(this)
-        panel.setPickedCount(totalPicked)
+        panel.setPickedCount(totalSelected)
 
         recycler = findViewById(R.id.picker_recycler)
         recycler.post {
             val spanCount = Recyclers.calculateSpanCount(recycler, mItemMinSize)
             val itemSize = Recyclers.calculateItemSize(recycler, spanCount, mItemMinSize, mItemSpacing)
-            mPickerLayoutManager = GridLayoutManager(this, spanCount)
+
+            recycler.layoutManager = GridLayoutManager(this, spanCount)
             recycler.addItemDecoration(GridSpacingItemDecoration(spanCount, mItemSpacing, true))
 
             recycler.adapter = PickerItemAdapter.Builder<PickerMedia>()
@@ -84,9 +83,8 @@ class PickerGalleryActivity : AppCompatActivity(),
                     .setAccessibilityController(this)
                     .setPreviewParams(PreviewFetcher.Params.of(itemSize, itemSize))
                     .setData(data)
-                    .setPickEnabled(limit - totalPicked > 0)
+                    .setPickEnabled(limit - totalSelected > 0)
                     .build()
-            recycler.layoutManager = mPickerLayoutManager
         }
     }
 
@@ -95,15 +93,15 @@ class PickerGalleryActivity : AppCompatActivity(),
     override fun isPicked(item: PickerMedia): Boolean = item in selected
 
     override fun onPick(item: PickerMedia) {
-        totalPicked++
-        panel.setPickedCount(totalPicked)
+        totalSelected++
+        panel.setPickedCount(totalSelected)
 
         selected += item
     }
 
     override fun onUnpick(item: PickerMedia) {
-        totalPicked--
-        panel.setPickedCount(totalPicked)
+        totalSelected--
+        panel.setPickedCount(totalSelected)
 
         selected -= item
     }
@@ -113,7 +111,7 @@ class PickerGalleryActivity : AppCompatActivity(),
     }
 
     override fun canPickMore(items: Collection<PickerMedia>): Boolean {
-        return limit <= 0 || limit - totalPicked > 0
+        return limit <= 0 || limit - totalSelected > 0
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

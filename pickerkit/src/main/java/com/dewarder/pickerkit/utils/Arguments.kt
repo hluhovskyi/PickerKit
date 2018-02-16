@@ -3,13 +3,19 @@ package com.dewarder.pickerkit.utils
 import android.app.Activity
 import android.content.Intent
 import android.os.Parcelable
-import kotlin.properties.ReadOnlyProperty
+import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
+
+//For now same implementation but separate declaration
+inline fun <reified T> Activity.argumentMutable(
+        key: String? = null,
+        default: T? = null
+): ReadWriteProperty<Activity, T> = argument(key, default)
 
 inline fun <reified T> Activity.argument(
         key: String? = null,
         default: T? = null
-): ReadOnlyProperty<Activity, T> =
+): ReadWriteProperty<Activity, T> =
         Lazy { property ->
             val realKey = key ?: property.name
             intent?.getArgument<T>(realKey)
@@ -39,9 +45,10 @@ inline fun <reified T> Intent.getArgument(key: String): T {
     }
 }
 
-class Lazy<out T>(
+@Suppress("unchecked_cast")
+class Lazy<T>(
         private val init: (KProperty<*>) -> T
-) : ReadOnlyProperty<Any, T> {
+) : ReadWriteProperty<Any, T> {
 
     private object EMPTY
 
@@ -52,5 +59,9 @@ class Lazy<out T>(
             value = init(property)
         }
         return value as T
+    }
+
+    override fun setValue(thisRef: Any, property: KProperty<*>, value: T) {
+        this.value = value
     }
 }

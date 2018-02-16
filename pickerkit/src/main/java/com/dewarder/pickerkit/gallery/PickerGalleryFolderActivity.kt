@@ -174,8 +174,8 @@ class PickerGalleryFolderActivity : AppCompatActivity(), OnCategoryClickListener
                 return
             }
 
-            selected.removeAll(result.unselected)
-            selected.addAll(result.selected)
+            selected -= result.unselected
+            selected += result.selected
 
             if (result.isSubmitted) {
                 submit()

@@ -9,9 +9,7 @@ interface PickerKit {
 
     fun <S : PickerStarter> openPicker(picker: Picker<S, *>): S
 
-    fun <C : ChooserStarter> openChooser(
-            chooser: Chooser<C>
-    ): C
+    fun <C : ChooserStarter> openChooser(chooser: Chooser<C>): C
 
     fun listenResults(): ListenerResultBuilder
 
