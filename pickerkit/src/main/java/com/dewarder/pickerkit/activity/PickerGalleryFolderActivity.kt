@@ -15,6 +15,7 @@ import android.view.View
 import android.widget.TextView
 import com.annimon.stream.Stream
 import com.dewarder.pickerkit.*
+import com.dewarder.pickerkit.core.PickerKit
 import com.dewarder.pickerkit.model.PickerImage
 import com.dewarder.pickerkit.model.PickerMedia
 import com.dewarder.pickerkit.model.PickerMediaFolder
@@ -76,10 +77,10 @@ class PickerGalleryFolderActivity : AppCompatActivity(), OnCategoryClickListener
         panel.setOnSubmitClickListener(this)
         panel.setOnCancelClickListener(this)
         panel.setOnCounterClickListener(this)
-       // panel.setAccentColor(mAccentColor)
+        // panel.setAccentColor(mAccentColor)
 
         progress = findViewById(R.id.progress)
-      //  progress.color = mAccentColor
+        //  progress.color = mAccentColor
 
         categoryRecycler = findViewById(R.id.category_recycler)
         categoryRecycler.post {
@@ -149,7 +150,7 @@ class PickerGalleryFolderActivity : AppCompatActivity(), OnCategoryClickListener
                 .setSelected(pickedPart)
                 .setTotalSelected(selected.size)
                 .setLimit(galleryLimit)
-                .start()
+                .startForResult()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -225,15 +226,24 @@ class PickerGalleryFolderActivity : AppCompatActivity(), OnCategoryClickListener
                 .setSelected(selected)
                 .setTotalSelected(selected.size)
                 .setLimit(galleryLimit)
-                .start()
+                .startForResult()
     }
 
     private fun submit() {
-        val intent = Intent()
         //TODO: Unselected isn't handled
         val result = ResultGallery.submit(selected, emptyList())
-        intent.putExtra(EXTRA_RESULT, result)
-        setResult(Activity.RESULT_OK, intent)
+
+        if (callingActivity == null) {
+            PickerKit.getInstance()
+                    .provideResults()
+                    .push(result)
+                    .commit()
+        } else {
+            val intent = Intent()
+            intent.putExtra(EXTRA_RESULT, result)
+            setResult(Activity.RESULT_OK, intent)
+        }
+
         finish()
     }
 

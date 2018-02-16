@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.support.annotation.IntRange
-import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -138,14 +137,16 @@ class PickerGalleryActivity : AppCompatActivity(),
     }
 
     private fun finishWithResult(result: PickerGalleryResult) {
-        val intent = Intent()
-        intent.putExtra(EXTRA_RESULT, result)
-        setResult(Activity.RESULT_OK, intent)
-
-        PickerKit.getInstance()
-                .provideResults()
-                .push(result)
-                .commit()
+        if (callingActivity == null) {
+            PickerKit.getInstance()
+                    .provideResults()
+                    .push(result)
+                    .commit()
+        } else {
+            val intent = Intent()
+            intent.putExtra(EXTRA_RESULT, result)
+            setResult(Activity.RESULT_OK, intent)
+        }
 
         finish()
     }
@@ -183,6 +184,10 @@ class PickerGalleryActivity : AppCompatActivity(),
         }
 
         fun start() {
+            activity.startActivity(intent)
+        }
+
+        fun startForResult() {
             val code = if (requestCode == -1) RequestCodeGenerator.generate() else requestCode
             activity.startActivityForResult(intent, code)
         }

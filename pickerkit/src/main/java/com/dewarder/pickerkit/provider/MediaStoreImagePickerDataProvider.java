@@ -39,7 +39,7 @@ public final class MediaStoreImagePickerDataProvider implements PickerDataProvid
             int dataColumn = cursor.getColumnIndex(MediaStore.Images.Media.DATA);
             do {
                 File file = new File(cursor.getString(dataColumn));
-                files.add(PickerImage.fromFile(file));
+                files.add(PickerImage.Companion.fromFile(file));
             } while (cursor.moveToNext());
         }
         callback.onNext(files);

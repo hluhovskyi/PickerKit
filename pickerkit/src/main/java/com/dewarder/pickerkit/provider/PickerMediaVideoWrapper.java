@@ -26,7 +26,7 @@ class PickerMediaVideoWrapper implements PickerDataProvider<PickerMedia> {
                 callback.onNext(
                         Stream.of(data)
                                 .map(PickerVideo::getSource)
-                                .map(PickerMedia::video)
+                                .map(PickerMedia.Companion::video)
                                 .toList());
             }
 
