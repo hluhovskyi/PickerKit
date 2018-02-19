@@ -28,6 +28,7 @@ import com.dewarder.pickerkit.result.PickerGalleryResult
 import com.dewarder.pickerkit.utils.Recyclers
 import com.dewarder.pickerkit.utils.argument
 import com.dewarder.pickerkit.utils.putArgument
+import com.dewarder.pickerkit.utils.withoutLastSegment
 import com.github.rahatarmanahmed.cpv.CircularProgressView
 import java.util.*
 
@@ -117,7 +118,7 @@ class PickerGalleryFolderActivity : AppCompatActivity(), OnCategoryClickListener
         dataProvider.request(object : PickerDataProvider.Callback<PickerMedia> {
             override fun onNext(data: Collection<PickerMedia>) {
                 val categories = data
-                        .groupBy { media -> media.source.lastPathSegment }
+                        .groupBy { media -> media.source.withoutLastSegment() }
                         .map { (_, medias) -> PickerMediaFolder.fromMedia(medias) }
 
                 categoryRecycler.post { categoryAdapter.appendCategories(categories) }

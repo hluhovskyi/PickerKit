@@ -68,17 +68,14 @@ class GalleryPickerActivity : AppCompatActivity(), OnPickerPanelCategoryClickLis
                 val pickerData = data
                         .map { it.source }
                         .map { PickerMedia.image(it) }
-                        .toList()
 
                 pickerPanel.post { pickerPanel.setData(pickerData) }
             }
 
             override fun onComplete() {
-
             }
 
             override fun onError(throwable: Throwable) {
-
             }
         })
     }

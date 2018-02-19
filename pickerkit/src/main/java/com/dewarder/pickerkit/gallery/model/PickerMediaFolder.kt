@@ -2,6 +2,7 @@ package com.dewarder.pickerkit.gallery.model
 
 import android.net.Uri
 import android.os.Parcelable
+import com.dewarder.pickerkit.utils.withoutLastSegment
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
@@ -23,11 +24,9 @@ data class PickerMediaFolder private constructor(
 
             val copy = media.toList()
             val source = copy.first().source
-            val rawSource = source.toString()
-            val lastSegment = source.lastPathSegment
 
             return PickerMediaFolder(
-                    source = Uri.parse(rawSource.substring(rawSource.length - lastSegment.length)),
+                    source = source.withoutLastSegment(),
                     children = copy,
                     itemCount = copy.size
             )
